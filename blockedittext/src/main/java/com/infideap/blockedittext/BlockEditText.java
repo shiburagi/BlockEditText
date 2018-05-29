@@ -18,6 +18,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.app.infideap.stylishwidget.view.AEditText;
+import com.app.infideap.stylishwidget.view.ATextView;
 
 public class BlockEditText extends FrameLayout {
     private int noOfBlock = 1;
@@ -25,6 +26,7 @@ public class BlockEditText extends FrameLayout {
     private LinearLayout blockLinearLayout;
     private SparseArray<Integer> lengths = new SparseArray<>();
     private int defaultLength = 1;
+    private ATextView hintTextView;
 
     public BlockEditText(@NonNull Context context) {
         super(context);
@@ -146,5 +148,14 @@ public class BlockEditText extends FrameLayout {
     public void setLengthAt(int index, int length) {
         lengths.put(index, length);
         initLayout();
+    }
+
+    public void setHint(String hint) {
+        if (hintTextView == null) {
+            hintTextView = new ATextView(getContext());
+            linearLayout.addView(hintTextView, 0);
+        }
+        hintTextView.setHint(hint);
+
     }
 }
