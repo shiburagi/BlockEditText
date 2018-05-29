@@ -10,11 +10,9 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.view.ViewCompat;
 import android.text.Editable;
 import android.text.InputFilter;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.ActionMode;
 import android.view.Gravity;
@@ -173,10 +171,12 @@ public class BlockEditText extends FrameLayout {
     public void setText(CharSequence sequence) {
         int i = 0;
         if (sequence != null) {
-            String text = String.valueOf(sequence);
-            if (inputType == InputType.TYPE_CLASS_NUMBER){
-                text = text.replaceAll("[\\D]", "");
-            }
+            String text = String.valueOf(sequence).replaceAll("[\\W]", "");
+//            if (inputType == InputType.TYPE_CLASS_NUMBER){
+//                text = text.replaceAll("[\\D]", "");
+//            }else{
+//                text = text.replaceAll("[\\W]", "");
+//            }
             for (; i < blockLinearLayout.getChildCount() && !TextUtils.isEmpty(text); i++) {
 
                 AEditText editText = (AEditText) blockLinearLayout.getChildAt(i);
