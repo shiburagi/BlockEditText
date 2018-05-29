@@ -1,5 +1,6 @@
 package com.infideap.blockedittext;
 
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -9,16 +10,24 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.view.ViewCompat;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseArray;
+import android.view.ActionMode;
 import android.view.Gravity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.app.infideap.stylishwidget.view.AEditText;
 import com.app.infideap.stylishwidget.view.ATextView;
+
+import static android.content.Context.CLIPBOARD_SERVICE;
 
 public class BlockEditText extends FrameLayout {
     private int noOfBlock = 1;
@@ -27,6 +36,7 @@ public class BlockEditText extends FrameLayout {
     private SparseArray<Integer> lengths = new SparseArray<>();
     private int defaultLength = 1;
     private ATextView hintTextView;
+    private int inputType;
 
     public BlockEditText(@NonNull Context context) {
         super(context);
@@ -110,6 +120,48 @@ public class BlockEditText extends FrameLayout {
 
                 }
             });
+
+            ActionMode.Callback callback = new ActionMode.Callback() {
+                @Override
+                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                    return true;
+                }
+
+                @Override
+                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                    return false;
+                }
+
+                @Override
+                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                    switch (item.getItemId()) {
+
+                        case android.R.id.paste:
+                            ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(CLIPBOARD_SERVICE);
+                            if (clipboard != null) {
+                                CharSequence sequence = clipboard.getPrimaryClip().getItemAt(0).getText();
+                                setText(sequence);
+                            }
+                            return true;
+
+                        default:
+                            break;
+                    }
+
+                    return false;
+                }
+
+
+                @Override
+                public void onDestroyActionMode(ActionMode mode) {
+
+                }
+            };
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                editText.setCustomInsertionActionModeCallback(callback);
+            }else
+                editText.setCustomSelectionActionModeCallback(callback);
+
             blockLinearLayout.addView(editText);
 
         }
@@ -117,11 +169,37 @@ public class BlockEditText extends FrameLayout {
 
     }
 
+
+    public void setText(CharSequence sequence) {
+        int i = 0;
+        if (sequence != null) {
+            String text = String.valueOf(sequence);
+            if (inputType == InputType.TYPE_CLASS_NUMBER){
+                text = text.replaceAll("[\\D]", "");
+            }
+            for (; i < blockLinearLayout.getChildCount() && !TextUtils.isEmpty(text); i++) {
+
+                AEditText editText = (AEditText) blockLinearLayout.getChildAt(i);
+                int length = getLength(i) > text.length() ? text.length() : getLength(i);
+                editText.setText(text.substring(0, length));
+                editText.setSelection(length);
+                text = text.substring(length);
+                editText.requestFocus();
+            }
+        }
+
+        for (; i < blockLinearLayout.getChildCount(); i++) {
+            AEditText editText = (AEditText) blockLinearLayout.getChildAt(i);
+            editText.setText(null);
+        }
+    }
+
     private int getLength(int i) {
         return lengths.get(i, defaultLength);
     }
 
     public void setInputType(int type) {
+        inputType = type;
         for (int i = 0; i < blockLinearLayout.getChildCount(); i++) {
             AEditText editText = (AEditText) blockLinearLayout.getChildAt(i);
             editText.setInputType(type);
