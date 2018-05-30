@@ -14,7 +14,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.ActionMode;
 import android.view.Gravity;
@@ -166,7 +165,6 @@ public class BlockEditText extends FrameLayout {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 EditText nextView = (EditText) blockLinearLayout.getChildAt(index + 1);
                 EditText prevView = (EditText) blockLinearLayout.getChildAt(index - 1);
-                Log.e("onTextChanged", s + " : " + s.length() + " != " + prevLength);
                 if (s.length() > prevLength && editText.isFocused() && editText.getSelectionStart() == getLength(index))
                     if (s.length() == getLength(index) && nextView != null && nextView.getText().length() == 0)
                         nextView.requestFocus();
@@ -184,7 +182,6 @@ public class BlockEditText extends FrameLayout {
                         Editable editable = nextView.getText();
                         String temp = editable.toString().substring(0, length);
                         editable = editable.delete(0, length);
-                        Log.e("onTextChanged", editable.toString());
                         editText.append(temp);
                         editText.setSelection(selection);
                         nextView.setText(editable);
@@ -285,14 +282,10 @@ public class BlockEditText extends FrameLayout {
         public CharSequence filter(CharSequence source, int start, int end, Spanned dest,
                                    int dstart, int dend) {
             int keep = mMax - (dest.length() - (dend - dstart));
-            Log.e("filter", String.valueOf(source));
             EditText nextView = (EditText) blockLinearLayout.getChildAt(index + 1);
             if (keep <= 0) {
-                Log.e("filter", "Keep : " + keep);
-
                 if (nextView != null) {
                     String s = source.toString();
-                    Log.e("filter", s);
                     String temp = editText.getText().toString();
                     int selection = editText.getSelectionStart();
                     temp = temp.substring(0, selection) + source + temp.substring(selection);
@@ -317,7 +310,6 @@ public class BlockEditText extends FrameLayout {
                         return "";
                     }
                 }
-
                 return source.subSequence(start, keep);
             }
         }
