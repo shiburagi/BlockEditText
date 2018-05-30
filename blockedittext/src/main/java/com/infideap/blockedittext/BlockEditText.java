@@ -10,15 +10,18 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.view.ViewCompat;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
@@ -92,32 +95,12 @@ public class BlockEditText extends FrameLayout {
                     0, LinearLayout.LayoutParams.WRAP_CONTENT, length
             );
             InputFilter[] filters = new InputFilter[1];
-            filters[0] = new InputFilter.LengthFilter(length);
+            filters[0] = new LengthFilter(editText, length, i);
             editText.setFilters(filters);
             editText.setLayoutParams(params);
             editText.setGravity(Gravity.CENTER);
 
-            final int finalI = i;
-            editText.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (start != before)
-                        if (s.length() == getLength(finalI) && blockLinearLayout.getChildAt(finalI + 1) != null)
-                            blockLinearLayout.getChildAt(finalI + 1).requestFocus();
-                        else if (s.length() == 0 && blockLinearLayout.getChildAt(finalI - 1) != null)
-                            blockLinearLayout.getChildAt(finalI - 1).requestFocus();
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-
-                }
-            });
+            editText.addTextChangedListener(createTextChangeListener(editText, i));
 
             ActionMode.Callback callback = new ActionMode.Callback() {
                 @Override
@@ -157,7 +140,7 @@ public class BlockEditText extends FrameLayout {
             };
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 editText.setCustomInsertionActionModeCallback(callback);
-            }else
+            } else
                 editText.setCustomSelectionActionModeCallback(callback);
 
             blockLinearLayout.addView(editText);
@@ -165,6 +148,57 @@ public class BlockEditText extends FrameLayout {
         }
 
 
+    }
+
+    private TextWatcher createTextChangeListener(final AEditText editText, final int index) {
+        return new TextWatcher() {
+            int prevLength = 0;
+
+            int selection = 0;
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                prevLength = s.length();
+                selection = editText.getSelectionStart();
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                EditText nextView = (EditText) blockLinearLayout.getChildAt(index + 1);
+                EditText prevView = (EditText) blockLinearLayout.getChildAt(index - 1);
+                Log.e("onTextChanged", s + " : " + s.length() + " != " + prevLength);
+                if (s.length() > prevLength && editText.isFocused() && editText.getSelectionStart() == getLength(index))
+                    if (s.length() == getLength(index) && nextView != null && nextView.getText().length() == 0)
+                        nextView.requestFocus();
+                    else if (s.length() == 0 && prevView != null)
+                        prevView.requestFocus();
+
+                if (s.length() < getLength(index)) {
+                    if (editText.getSelectionStart() == 0 && editText.isFocused() && prevView != null) {
+                        prevView.requestFocus();
+                        prevView.setSelection(prevView.getText().length());
+                    }
+                    if (nextView != null && !nextView.getText().toString().isEmpty()) {
+                        int length = getLength(index) - s.length();
+                        length = length > nextView.getText().length() ? nextView.getText().length() : length;
+                        Editable editable = nextView.getText();
+                        String temp = editable.toString().substring(0, length);
+                        editable = editable.delete(0, length);
+                        Log.e("onTextChanged", editable.toString());
+                        editText.append(temp);
+                        editText.setSelection(selection);
+                        nextView.setText(editable);
+
+                    }
+                }
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        };
     }
 
 
@@ -235,5 +269,64 @@ public class BlockEditText extends FrameLayout {
         }
         hintTextView.setHint(hint);
 
+    }
+
+    public class LengthFilter implements InputFilter {
+        private final int mMax;
+        private final int index;
+        private final AEditText editText;
+
+        public LengthFilter(AEditText editText, int max, int index) {
+            mMax = max;
+            this.index = index;
+            this.editText = editText;
+        }
+
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest,
+                                   int dstart, int dend) {
+            int keep = mMax - (dest.length() - (dend - dstart));
+            Log.e("filter", String.valueOf(source));
+            EditText nextView = (EditText) blockLinearLayout.getChildAt(index + 1);
+            if (keep <= 0) {
+                Log.e("filter", "Keep : " + keep);
+
+                if (nextView != null) {
+                    String s = source.toString();
+                    Log.e("filter", s);
+                    String temp = editText.getText().toString();
+                    int selection = editText.getSelectionStart();
+                    temp = temp.substring(0, selection) + source + temp.substring(selection);
+                    editText.setText(temp.substring(0, mMax));
+                    nextView.getEditableText().insert(0, temp.substring(mMax));
+
+                    if (selection + source.length() < mMax)
+                        editText.setSelection(selection + source.length());
+                    else {
+                        nextView.setSelection(0);
+                        nextView.requestFocus();
+                    }
+                }
+                return "";
+            } else if (keep >= end - start) {
+                return null; // keep original
+            } else {
+                keep += start;
+                if (Character.isHighSurrogate(source.charAt(keep - 1))) {
+                    --keep;
+                    if (keep == start) {
+                        return "";
+                    }
+                }
+
+                return source.subSequence(start, keep);
+            }
+        }
+
+        /**
+         * @return the maximum length enforced by this input filter
+         */
+        public int getMax() {
+            return mMax;
+        }
     }
 }
