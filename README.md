@@ -81,6 +81,7 @@ amexEditText.setLengthAt(1,6);
 
 amexEditText.setHint("Amex");
 amexEditText.setText("1234567890");
+amexEditText.getText();
 
 amexEditText.setTextSize(16);
 amexEditText.setHintTextSize(16);
@@ -96,6 +97,8 @@ amexEditText.setHintTextAppearance(android.support.v7.appcompat.R.style.Base_Tex
 amexEditText.setSeparatorTextAppearance(android.support.v7.appcompat.R.style.Base_TextAppearance_AppCompat_Medium);
 
 amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this, R.drawable.selector_edittext_round_border_line));
+
+amexEditText.setSelection(0);
 
 ```
 
