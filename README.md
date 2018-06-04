@@ -4,7 +4,7 @@
 
 Block EditText is a library provide a input view present in multiple block style that common use in **TAC** or **credit card field**.
 
-![Alt Text](https://raw.githubusercontent.com/shiburagi/Drawer-Behavior/master/preview.gif)
+![Alt Text](https://raw.githubusercontent.com/shiburagi/BlockEditText/preview/preview1.gif)
 
 Android 9.0+ support
 
