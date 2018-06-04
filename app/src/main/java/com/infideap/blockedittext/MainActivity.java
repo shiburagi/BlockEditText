@@ -11,21 +11,16 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BlockEditText editText1 = findViewById(R.id.blockEditText1);
-        editText1.setNumberOfBlock(4);
-        editText1.setDefaultLength(4);
-        editText1.setHint("Visa/Mastercard");
-        editText1.setInputType(InputType.TYPE_CLASS_NUMBER);
-        editText1.setEdiTextBackground(ContextCompat.getDrawable(this, R.drawable.selector_edittext_round_border_line));
 
-        BlockEditText editText2 = findViewById(R.id.blockEditText2);
-        editText2.setNumberOfBlock(3);
-        editText2.setDefaultLength(4);
-        editText2.setLengthAt(1,6);
-        editText2.setLengthAt(2,5);
-        editText2.setHint("Amex");
-        editText2.setInputType(InputType.TYPE_CLASS_NUMBER);
-        editText2.setEdiTextBackground(ContextCompat.getDrawable(this, R.drawable.selector_edittext_round_border_line));
+        BlockEditText amexEditText = findViewById(R.id.blockEditText_amex);
+        amexEditText.setNumberOfBlock(3);
+        amexEditText.setDefaultLength(4);
+        amexEditText.setLengthAt(1,6);
+        amexEditText.setLengthAt(2,5);
+        amexEditText.setHint("Amex");
+        amexEditText.setSeparatorCharacter('-');
+        amexEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this, R.drawable.selector_edittext_round_border_line));
 
 
 

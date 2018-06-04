@@ -1,24 +1,30 @@
 package com.infideap.blockedittext;
 
-import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -27,8 +33,6 @@ import android.widget.LinearLayout;
 import com.app.infideap.stylishwidget.view.AEditText;
 import com.app.infideap.stylishwidget.view.ATextView;
 
-import static android.content.Context.CLIPBOARD_SERVICE;
-
 public class BlockEditText extends FrameLayout {
     private int noOfBlock = 1;
     private LinearLayout linearLayout;
@@ -36,7 +40,22 @@ public class BlockEditText extends FrameLayout {
     private SparseArray<Integer> lengths = new SparseArray<>();
     private int defaultLength = 1;
     private ATextView hintTextView;
-    private int inputType;
+    private int inputType = InputType.TYPE_CLASS_TEXT;
+    private TextWatcher watcher;
+    private ActionMode.Callback callback;
+    private SparseArray<AEditText> editTexts = new SparseArray<>();
+    private Character separator;
+    private int separatorTextAppearance = android.support.v7.appcompat.R.style.Base_TextAppearance_AppCompat_Medium;
+    private int separatorPadding = 16;
+    private float separatorTextSize;
+    private float textSize;
+    private float hintTextSize;
+    private int textAppearance = android.support.v7.appcompat.R.style.Base_TextAppearance_AppCompat_Medium;
+    private int hintTextAppearance = android.support.v7.appcompat.R.style.Base_TextAppearance_AppCompat_Medium;
+    private Drawable editTextBackground;
+    private String hint;
+    private ColorStateList hintColorDefault;
+    private ColorStateList hintColorFocus;
 
     public BlockEditText(@NonNull Context context) {
         super(context);
@@ -74,7 +93,80 @@ public class BlockEditText extends FrameLayout {
         linearLayout.addView(blockLinearLayout);
 
         addView(linearLayout);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BlockEditText);
+        editTextBackground = a.getDrawable(R.styleable.BlockEditText_bet_editTextBackground);
+        hint = a.getString(R.styleable.BlockEditText_bet_hint);
+        setHint(hint);
+
+        String tempStr = a.getString(R.styleable.BlockEditText_bet_separatorCharacter);
+        if (!TextUtils.isEmpty(tempStr)) {
+            separator = tempStr.charAt(0);
+        }
+
+        noOfBlock = a.getInt(
+                R.styleable.BlockEditText_bet_numberOfBlock,
+                noOfBlock
+        );
+
+        defaultLength = a.getInt(
+                R.styleable.BlockEditText_bet_defaultLength,
+                defaultLength
+        );
+
+        textAppearance = a.getResourceId(
+                R.styleable.BlockEditText_bet_hintTextAppearance,
+                textAppearance
+        );
+
+        hintTextAppearance = a.getResourceId(
+                R.styleable.BlockEditText_bet_hintTextAppearance,
+                hintTextAppearance
+        );
+
+        separatorTextAppearance = a.getResourceId(
+                R.styleable.BlockEditText_bet_separatorTextAppearance,
+                separatorTextAppearance
+        );
+
+        textSize = a.getDimension(
+                R.styleable.BlockEditText_bet_textSize,
+                textSize
+        );
+
+        Log.e("textSize", String.valueOf(textSize));
+
+        hintTextSize = a.getDimension(
+                R.styleable.BlockEditText_bet_hintTextSize,
+                hintTextSize
+        );
+
+        separatorTextSize = a.getDimension(
+                R.styleable.BlockEditText_bet_separatorTextSize,
+                separatorTextSize
+        );
+
+
+        separatorPadding = a.getDimensionPixelOffset(
+                R.styleable.BlockEditText_bet_hintTextSize,
+                separatorPadding
+        );
+
+        inputType = a.getInt(
+                R.styleable.BlockEditText_bet_inputType,
+                inputType
+        );
+
+
+        setHintTextAppearance(hintTextAppearance);
+
+
         initLayout();
+        tempStr = a.getString(R.styleable.BlockEditText_bet_text);
+        if (tempStr != null)
+            setText(tempStr);
+        a.recycle();
+
     }
 
     private ViewGroup.LayoutParams createWidthMatchParentLayoutParams() {
@@ -85,68 +177,95 @@ public class BlockEditText extends FrameLayout {
 
     private void initLayout() {
         blockLinearLayout.removeAllViews();
-
-        for (int i = 0; i < noOfBlock; i++) {
+        int i = 0;
+        for (; i < noOfBlock; i++) {
 
             final int length = getLength(i);
-            final AEditText editText = new AEditText(getContext());
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    0, LinearLayout.LayoutParams.WRAP_CONTENT, length
-            );
+            AEditText editText;
+            if (editTexts.get(i) == null) {
+                editText = new AEditText(getContext());
+                editText.addTextChangedListener(createTextChangeListener(editText, i));
+                editTexts.put(i, editText);
+                editText.setOnFocusChangeListener(new OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        if (hintTextView != null)
+                            hintTextView.setHintTextColor(hasFocus ? hintColorFocus : hintColorDefault);
+                    }
+                });
+
+                editText.setSupportTextAppearance(textAppearance);
+                setTextSize(editText, textSize);
+
+            } else {
+                editText = editTexts.get(i);
+            }
+
+            editText.setInputType(inputType);
             InputFilter[] filters = new InputFilter[1];
             filters[0] = new LengthFilter(editText, length, i);
             editText.setFilters(filters);
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, length
+            );
             editText.setLayoutParams(params);
             editText.setGravity(Gravity.CENTER);
-
-            editText.addTextChangedListener(createTextChangeListener(editText, i));
-
-            ActionMode.Callback callback = new ActionMode.Callback() {
-                @Override
-                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                    return true;
-                }
-
-                @Override
-                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                    return false;
-                }
-
-                @Override
-                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-                    switch (item.getItemId()) {
-
-                        case android.R.id.paste:
-                            ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(CLIPBOARD_SERVICE);
-                            if (clipboard != null) {
-                                CharSequence sequence = clipboard.getPrimaryClip().getItemAt(0).getText();
-                                setText(sequence);
-                            }
-                            return true;
-
-                        default:
-                            break;
-                    }
-
-                    return false;
-                }
-
-
-                @Override
-                public void onDestroyActionMode(ActionMode mode) {
-
-                }
-            };
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                editText.setCustomInsertionActionModeCallback(callback);
-            } else
-                editText.setCustomSelectionActionModeCallback(callback);
-
             blockLinearLayout.addView(editText);
+            if (editTextBackground != null)
+                setEdiTextBackground(editText, editTextBackground);
 
+            if (i + 1 < noOfBlock && separator != null) {
+                ATextView textView = new ATextView(getContext());
+                textView.setText(String.valueOf(separator));
+                LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                textViewParams.gravity = Gravity.CENTER;
+                textView.setLayoutParams(textViewParams);
+                textView.setPadding(separatorPadding, 0, separatorPadding, 0);
+                textView.setSupportTextAppearance(separatorTextAppearance);
+                if (separatorTextSize > 0)
+                    textView.setTextSize(separatorTextSize);
+                blockLinearLayout.addView(textView);
+            }
+
+            if (i > 0)
+                editText.setEnabled(false);
+
+
+        }
+        for (; i < editTexts.size(); ) {
+            editTexts.remove(i);
         }
 
 
+    }
+
+
+    private ActionMode.Callback createActionModeCallback(AEditText editText) {
+        return new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
+                return false;
+            }
+
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+
+            }
+        };
     }
 
     private TextWatcher createTextChangeListener(final AEditText editText, final int index) {
@@ -159,12 +278,14 @@ public class BlockEditText extends FrameLayout {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 prevLength = s.length();
                 selection = editText.getSelectionStart();
+                BlockEditText.this.beforeTextChanged(s, start, count, after);
+
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                EditText nextView = (EditText) blockLinearLayout.getChildAt(index + 1);
-                EditText prevView = (EditText) blockLinearLayout.getChildAt(index - 1);
+                EditText nextView = editTexts.get(index + 1);
+                EditText prevView = editTexts.get(index - 1);
                 if (s.length() > prevLength && editText.isFocused() && editText.getSelectionStart() == getLength(index))
                     if (s.length() == getLength(index) && nextView != null && nextView.getText().length() == 0)
                         nextView.requestFocus();
@@ -176,6 +297,7 @@ public class BlockEditText extends FrameLayout {
                         prevView.requestFocus();
                         prevView.setSelection(prevView.getText().length());
                     }
+
                     if (nextView != null && !nextView.getText().toString().isEmpty()) {
                         int length = getLength(index) - s.length();
                         length = length > nextView.getText().length() ? nextView.getText().length() : length;
@@ -188,51 +310,109 @@ public class BlockEditText extends FrameLayout {
 
                     }
                 }
+                BlockEditText.this.onTextChanged(s, start, before, count);
+
 
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+                EditText nextView = editTexts.get(index + 1);
 
+                if (nextView != null)
+                    nextView.setEnabled(s.length() >= getLength(index));
+
+                BlockEditText.this.afterTextChanged(s);
             }
         };
     }
 
+    private void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        if (watcher != null) watcher.beforeTextChanged(s, start, count, after);
+    }
+
+    private void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (watcher != null) watcher.onTextChanged(s, start, before, count);
+
+    }
+
+    private void afterTextChanged(Editable s) {
+        if (watcher != null) watcher.afterTextChanged(s);
+
+    }
+
+    public void setTextChangedListener(TextWatcher watcher) {
+        this.watcher = watcher;
+    }
+
+
+    public void setCustomInsertionActionModeCallback(ActionMode.Callback callback) {
+        this.callback = callback;
+        for (int i = 0; i < editTexts.size(); i++) {
+            AEditText editText = editTexts.get(i);
+            setCustomInsertionActionModeCallback(editText, callback);
+        }
+    }
+
+    private void setCustomInsertionActionModeCallback(AEditText editText, ActionMode.Callback callback) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            editText.setCustomInsertionActionModeCallback(callback);
+        } else
+            editText.setCustomSelectionActionModeCallback(callback);
+    }
+
+    public void setSeparatorCharacter(Character separator) {
+        this.separator = separator;
+        initLayout();
+    }
 
     public void setText(CharSequence sequence) {
         int i = 0;
-        if (sequence != null) {
-            String text = String.valueOf(sequence).replaceAll("[\\W]", "");
-//            if (inputType == InputType.TYPE_CLASS_NUMBER){
-//                text = text.replaceAll("[\\D]", "");
-//            }else{
-//                text = text.replaceAll("[\\W]", "");
-//            }
-            for (; i < blockLinearLayout.getChildCount() && !TextUtils.isEmpty(text); i++) {
+        for (; i < editTexts.size(); i++) {
 
-                AEditText editText = (AEditText) blockLinearLayout.getChildAt(i);
-                int length = getLength(i) > text.length() ? text.length() : getLength(i);
-                editText.setText(text.substring(0, length));
-                editText.setSelection(length);
-                text = text.substring(length);
-                editText.requestFocus();
-            }
-        }
-
-        for (; i < blockLinearLayout.getChildCount(); i++) {
-            AEditText editText = (AEditText) blockLinearLayout.getChildAt(i);
+            AEditText editText = editTexts.get(i);
             editText.setText(null);
+
         }
+        if (sequence != null) {
+            String text = String.valueOf(sequence);
+            AEditText editText = editTexts.get(0);
+            editText.getEditableText().insert(0, text);
+
+        }
+
+
     }
 
     private int getLength(int i) {
         return lengths.get(i, defaultLength);
     }
 
+    public void setTextSize(float textSize) {
+        this.textSize = textSize;
+        for (int i = 0; i < editTexts.size(); i++) {
+            AEditText editText = editTexts.get(i);
+            setTextSize(editText, textSize);
+        }
+    }
+
+    private void setTextSize(AEditText editText, float textSize) {
+        if (textSize > 0)
+            editText.setTextSize(textSize);
+    }
+
+    public void setTextAppearance(int textAppearance) {
+        this.textAppearance = textAppearance;
+        for (int i = 0; i < editTexts.size(); i++) {
+            AEditText editText = editTexts.get(i);
+            editText.setSupportTextAppearance(textAppearance);
+        }
+    }
+
     public void setInputType(int type) {
         inputType = type;
-        for (int i = 0; i < blockLinearLayout.getChildCount(); i++) {
-            AEditText editText = (AEditText) blockLinearLayout.getChildAt(i);
+        for (int i = 0; i < editTexts.size(); i++) {
+            AEditText editText = editTexts.get(i);
             editText.setInputType(type);
         }
     }
@@ -248,10 +428,15 @@ public class BlockEditText extends FrameLayout {
     }
 
     public void setEdiTextBackground(Drawable drawable) {
-        for (int i = 0; i < blockLinearLayout.getChildCount(); i++) {
-            AEditText editText = (AEditText) blockLinearLayout.getChildAt(i);
-            ViewCompat.setBackground(editText, drawable.getConstantState().newDrawable());
+        for (int i = 0; i < editTexts.size(); i++) {
+            AEditText editText = editTexts.get(i);
+
+            setEdiTextBackground(editText, drawable);
         }
+    }
+
+    private void setEdiTextBackground(AEditText editText, Drawable drawable) {
+        ViewCompat.setBackground(editText, drawable.getConstantState().newDrawable());
     }
 
     public void setLengthAt(int index, int length) {
@@ -262,10 +447,51 @@ public class BlockEditText extends FrameLayout {
     public void setHint(String hint) {
         if (hintTextView == null) {
             hintTextView = new ATextView(getContext());
+            hintTextView.setPadding(16, 0, 16, 0);
+            setHintTextAppearance(hintTextAppearance);
+            setHintTextSize(hintTextAppearance);
             linearLayout.addView(hintTextView, 0);
+            hintColorDefault = hintTextView.getHintTextColors();
+            hintColorFocus = ContextCompat.getColorStateList(
+                    getContext(),
+                    R.color.colorAccent
+            );
+
+
         }
+        hintTextView.setVisibility(hint == null ? GONE : VISIBLE);
         hintTextView.setHint(hint);
 
+
+    }
+
+    public void setHintTextSize(float textSize) {
+        this.hintTextSize = textSize;
+        if (hintTextView != null && textSize > 0) {
+            hintTextView.setTextSize(textSize);
+        }
+    }
+
+    public void setHintTextAppearance(int textAppearance) {
+        this.hintTextAppearance = textAppearance;
+        if (hintTextView != null) {
+            hintTextView.setSupportTextAppearance(textAppearance);
+        }
+    }
+
+    public void setSeparatorTextAppearance(int textAppearance) {
+        this.separatorTextAppearance = textAppearance;
+        initLayout();
+    }
+
+    public void setSeparatorPadding(int padding) {
+        this.separatorPadding = padding;
+        initLayout();
+    }
+
+    public void setSeparatorTextSize(float textSize) {
+        this.separatorTextSize = textSize;
+        initLayout();
     }
 
     public class LengthFilter implements InputFilter {
@@ -281,8 +507,17 @@ public class BlockEditText extends FrameLayout {
 
         public CharSequence filter(CharSequence source, int start, int end, Spanned dest,
                                    int dstart, int dend) {
+            if (editText.getInputType() == InputType.TYPE_CLASS_NUMBER) {
+                source = String.valueOf(source).replaceAll("[\\D]", "");
+            } else {
+                source = String.valueOf(source).replaceAll("[\\W]", "");
+            }
             int keep = mMax - (dest.length() - (dend - dstart));
-            EditText nextView = (EditText) blockLinearLayout.getChildAt(index + 1);
+
+            EditText nextView = editTexts.get(index + 1);
+            Log.e("filter", String.valueOf(source));
+            if (source.length() == 0)
+                return null;
             if (keep <= 0) {
                 if (nextView != null) {
                     String s = source.toString();
@@ -290,19 +525,51 @@ public class BlockEditText extends FrameLayout {
                     int selection = editText.getSelectionStart();
                     temp = temp.substring(0, selection) + source + temp.substring(selection);
                     editText.setText(temp.substring(0, mMax));
-                    nextView.getEditableText().insert(0, temp.substring(mMax));
-
-                    if (selection + source.length() < mMax)
+                    temp = temp.substring(mMax);
+                    if (selection + source.length() <= mMax)
                         editText.setSelection(selection + source.length());
                     else {
-                        nextView.setSelection(0);
                         nextView.requestFocus();
+                        nextView.setSelection(0);
+
                     }
+                    if (temp.length() > 0) {
+                        nextView.getEditableText().insert(0, temp);
+                        int nextLength = getLength(index + 1);
+                        nextView.setSelection(temp.length() < nextLength ? temp.length() : nextLength);
+                    } else
+                        nextView.setSelection(0);
+
                 }
                 return "";
             } else if (keep >= end - start) {
                 return null; // keep original
             } else {
+                if (source.length() > keep)
+                    if (nextView != null) {
+                        String s = source.toString();
+                        String temp = editText.getText().toString();
+                        int selection = editText.getSelectionStart();
+                        temp = temp.substring(0, selection) + source + temp.substring(selection);
+                        editText.setText(temp.substring(0, mMax));
+
+                        temp = temp.substring(mMax);
+                        if (selection + source.length() <= mMax)
+                            editText.setSelection(selection + source.length());
+                        else {
+                            nextView.requestFocus();
+                            nextView.setSelection(0);
+
+                        }
+                        if (temp.length() > 0) {
+                            nextView.getEditableText().insert(0, temp);
+                            int nextLength = getLength(index + 1);
+                            nextView.setSelection(temp.length() < nextLength ? temp.length() : nextLength);
+                        } else
+                            nextView.setSelection(0);
+                        return "";
+                    }
+
                 keep += start;
                 if (Character.isHighSurrogate(source.charAt(keep - 1))) {
                     --keep;
@@ -310,6 +577,8 @@ public class BlockEditText extends FrameLayout {
                         return "";
                     }
                 }
+
+
                 return source.subSequence(start, keep);
             }
         }

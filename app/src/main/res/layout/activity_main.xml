@@ -13,14 +13,35 @@
         android:orientation="vertical">
 
         <com.infideap.blockedittext.BlockEditText
-            android:id="@+id/blockEditText1"
+            android:id="@+id/blockEditText_tac"
+            app:bet_defaultLength="1"
+            app:bet_numberOfBlock="4"
+            app:bet_inputType="Integer"
+            app:bet_hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:bet_hint="TAC"
+            app:bet_textSize="24sp"
+            android:layout_width="300dp"
+            app:bet_editTextBackground="@drawable/selector_edittext_round_border"
+            android:layout_height="wrap_content" />
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="16dp" />
+
+        <com.infideap.blockedittext.BlockEditText
+            android:id="@+id/blockEditText_visa"
+            app:bet_defaultLength="4"
+            app:bet_numberOfBlock="4"
+            app:bet_text="131321323-13213-21321312"
+            app:bet_inputType="Integer"
+            app:bet_hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:bet_hint="Visa/Mastercard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <Space
             android:layout_width="wrap_content"
-            android:layout_height="8dp" />
+            android:layout_height="16dp" />
         <com.infideap.blockedittext.BlockEditText
-            android:id="@+id/blockEditText2"
+            android:id="@+id/blockEditText_amex"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>

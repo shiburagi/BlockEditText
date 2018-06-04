@@ -1,12 +1,16 @@
 apply plugin: 'com.android.library'
-
+ext{
+    PUBLISH_GROUP_ID= 'com.infideap.blockedittext'
+    PUBLISH_ARTIFACT_ID= 'block-edittext'
+    PUBLISH_VERSION= '0.0.2'
+}
 android {
     compileSdkVersion 27
 
 
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 14
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -39,3 +43,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
+apply from: 'https://raw.githubusercontent.com/blundell/release-android-library/' +
+        'master/android-release-aar.gradle'
