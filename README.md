@@ -1,6 +1,6 @@
 # BlockEditText
 
-[ ![Download](https://api.bintray.com/packages/infideap2/Block-EditText/com.infideap.blockedittext/images/download.svg?version=0.0.2) ](https://bintray.com/infideap2/Block-EditText/com.infideap.blockedittext/0.0.2/link)
+[ ![Download](https://api.bintray.com/packages/infideap2/Block-EditText/com.infideap.blockedittext/images/download.svg) ](https://bintray.com/infideap2/Block-EditText/com.infideap.blockedittext/_latestVersion)
 
 Block EditText is a library provide a input view present in multiple block style that common use in **TAC** or **credit card field**.
 
