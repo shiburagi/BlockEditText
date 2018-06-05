@@ -22,7 +22,13 @@ public class MainActivity extends AppCompatActivity {
         amexEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
         amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this, R.drawable.selector_edittext_round_border_line));
 
+        BlockEditText icNumberEditText = findViewById(R.id.blockEditText_ic_number);
+        icNumberEditText.setNumberOfBlock(3);
+        icNumberEditText.setDefaultLength(6);
+        icNumberEditText.setLengthAt(1,2);
+        icNumberEditText.setLengthAt(2,4);
 
+        icNumberEditText.setSelection(0);
 
     }
 }
