@@ -2,7 +2,7 @@
 
 [ ![Download](https://api.bintray.com/packages/infideap2/Block-EditText/com.infideap.blockedittext/images/download.svg) ](https://bintray.com/infideap2/Block-EditText/com.infideap.blockedittext/_latestVersion)
 
-Block EditText is a library provide a input view present in multiple block style that common use in **TAC** or **credit card field**.
+Block EditText is a library provide an input view present in multiple block style that common use in **TAC** or **credit card field**.
 
 ![Alt Text](https://raw.githubusercontent.com/shiburagi/BlockEditText/preview/preview1.gif)
 
