@@ -22,6 +22,11 @@ public class MainActivity extends AppCompatActivity {
         amexEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
         amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this, R.drawable.selector_edittext_round_border_line));
 
+        BlockEditText cardEditText = findViewById(R.id.blockEditText_card);
+        cardEditText.addCardPrefix(CardPrefix.masterCard(this));
+        cardEditText.addCardPrefix(CardPrefix.visa(this));
+        cardEditText.addCardPrefix(CardPrefix.amex(this));
+
         BlockEditText icNumberEditText = findViewById(R.id.blockEditText_ic_number);
         icNumberEditText.setNumberOfBlock(3);
         icNumberEditText.setDefaultLength(6);

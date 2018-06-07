@@ -19,7 +19,7 @@
             app:bet_inputType="Integer"
             app:bet_hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
             app:bet_hint="TAC"
-            app:bet_textSize="24sp"
+            app:bet_textSize="18sp"
             android:layout_width="300dp"
             app:bet_editTextBackground="@drawable/selector_edittext_round_border"
             android:layout_height="wrap_content" />
@@ -45,6 +45,20 @@
             android:id="@+id/blockEditText_amex"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="16dp" />
+
+        <com.infideap.blockedittext.BlockEditText
+            android:id="@+id/blockEditText_card"
+            app:bet_defaultLength="4"
+            app:bet_inputType="Integer"
+            app:bet_hint="Credit Card"
+            app:bet_numberOfBlock="4"
+            app:bet_editTextBackground="@drawable/selector_edittext_round_border"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
         <Space
             android:layout_width="wrap_content"
             android:layout_height="16dp" />
