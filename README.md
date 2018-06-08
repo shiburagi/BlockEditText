@@ -4,7 +4,7 @@
 
 Block EditText is a library provide an input view present in multiple block style that common use in **TAC** or **credit card field**.
 
-![Alt Text](https://raw.githubusercontent.com/shiburagi/BlockEditText/preview/preview1.gif)
+![Alt Text](https://raw.githubusercontent.com/shiburagi/BlockEditText/preview/preview2.gif)
 
 Android 9.0+ support
 
@@ -17,14 +17,14 @@ a dependency:
 <dependency>
   <groupId>com.infideap.blockedittext</groupId>
   <artifactId>block-edittext</artifactId>
-  <version>0.0.4</version>
+  <version>0.0.5</version>
   <type>pom</type>
 </dependency>
 ```
 #### Gradle
 ```groovy
 dependencies {
-   compile 'com.infideap.blockedittext:block-edittext:0.0.4'
+   compile 'com.infideap.blockedittext:block-edittext:0.0.5'
 }
 ```
 
