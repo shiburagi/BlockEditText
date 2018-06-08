@@ -3,7 +3,6 @@ package com.infideap.blockedittext;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -38,10 +37,13 @@ import com.app.infideap.stylishwidget.view.AEditText;
 import com.app.infideap.stylishwidget.view.ATextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class BlockEditText extends FrameLayout {
+    private static final int AMEX = 1;
+    private static final int MASTERCARD = 2;
+    private static final int VISA = 3;
+
     private int noOfBlock = 1;
     private LinearLayout linearLayout;
     private LinearLayout blockLinearLayout;
@@ -68,6 +70,10 @@ public class BlockEditText extends FrameLayout {
 
     private List<CardPrefix> cardPrefixes = new ArrayList<>();
     private ImageView iconImageView;
+    private OnCardPrefixListener cardPrefixListener;
+    private int cardIconSize = (int) Utils.convertDpToPixel(48);
+    private boolean isEnabled = true;
+    private boolean isShowCardIcon;
 
     public BlockEditText(@NonNull Context context) {
         super(context);
@@ -159,6 +165,10 @@ public class BlockEditText extends FrameLayout {
                 separatorTextSize
         );
 
+        cardIconSize = a.getDimensionPixelOffset(
+                R.styleable.BlockEditText_bet_cardIconSize,
+                cardIconSize
+        );
 
         separatorPadding = a.getDimensionPixelOffset(
                 R.styleable.BlockEditText_bet_hintTextSize,
@@ -170,6 +180,26 @@ public class BlockEditText extends FrameLayout {
                 inputType
         );
 
+        isShowCardIcon = a.getBoolean(
+                R.styleable.BlockEditText_bet_showCardIcon,
+                true
+        );
+
+        int cardPrefix = a.getInt(
+                R.styleable.BlockEditText_bet_cardPrefix,
+                0
+        );
+
+        if (containsFlag(cardPrefix, AMEX)) {
+            cardPrefixes.add(CardPrefix.amex(getContext()));
+        }
+        if (containsFlag(cardPrefix, MASTERCARD)) {
+            cardPrefixes.add(CardPrefix.mastercard(getContext()));
+        }
+        if (containsFlag(cardPrefix, VISA)) {
+            cardPrefixes.add(CardPrefix.visa(getContext()));
+        }
+
 
         setHintTextAppearance(hintTextAppearance);
 
@@ -180,6 +210,10 @@ public class BlockEditText extends FrameLayout {
             setText(tempStr);
         a.recycle();
 
+    }
+
+    private boolean containsFlag(int flagSet, int flag) {
+        return (flagSet | flag) == flagSet;
     }
 
     private ViewGroup.LayoutParams createWidthMatchParentLayoutParams() {
@@ -248,6 +282,8 @@ public class BlockEditText extends FrameLayout {
 
             if (i > 0)
                 editText.setEnabled(false);
+            else
+                editText.setEnabled(isEnabled);
 
 
         }
@@ -507,17 +543,44 @@ public class BlockEditText extends FrameLayout {
         return cardPrefix;
     }
 
+    public void setCardIconSize(int size) {
+        cardIconSize = size;
+        if (iconImageView != null) {
+            iconImageView.getLayoutParams().width = size;
+            iconImageView.requestLayout();
+        }
+    }
+
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+        for (int i = 0; i < editTexts.size(); i++) {
+            AEditText editText = editTexts.get(i);
+            editText.setEnabled(isEnabled);
+        }
+    }
+
+    public void setShowCardIcon(boolean isShowCardIcon){
+        this.isShowCardIcon = isShowCardIcon;
+        hideOrShowCardIcon();
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
 
     private void hideOrShowCardIcon() {
-        if (cardPrefixes.size() > 0) {
+        if (isShowCardIcon && cardPrefixes.size() > 0) {
             if (iconImageView == null) {
                 iconImageView = new ImageView(getContext());
+                iconImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                iconImageView.setAdjustViewBounds(true);
                 ViewGroup.LayoutParams params = new LayoutParams(
-                        (int) Utils.convertDpToPixel(32),
+                        cardIconSize,
                         ViewGroup.LayoutParams.MATCH_PARENT
                 );
                 iconImageView.setLayoutParams(params);
                 blockLinearLayout.addView(iconImageView);
+                updateCardIcon();
             } else if (iconImageView.getParent() == null) {
                 blockLinearLayout.addView(iconImageView);
             }
@@ -543,12 +606,21 @@ public class BlockEditText extends FrameLayout {
                             lengthUsed = cardPrefix.getLengths();
                             updateEditTextLength();
                         }
+                        if (cardPrefixListener != null)
+                            cardPrefixListener.onCardUpdate(cardPrefix);
+
                         return;
                     }
             }
             lengthUsed = lengths;
-            iconImageView.setImageDrawable(null);
-            updateEditTextLength();
+            if (iconImageView != null) {
+                iconImageView.setImageDrawable(null);
+                updateEditTextLength();
+            }
+
+            if (cardPrefixListener != null)
+                cardPrefixListener.onCardUpdate(null);
+
 
         }
 
@@ -561,6 +633,10 @@ public class BlockEditText extends FrameLayout {
             params.weight = getLength(i);
             editText.requestLayout();
         }
+    }
+
+    public void setOnCardPrefixListener(OnCardPrefixListener listener) {
+        this.cardPrefixListener = listener;
     }
 
     private ActionMode.Callback createActionModeCallback(AEditText editText) {
@@ -580,7 +656,6 @@ public class BlockEditText extends FrameLayout {
 
                 return false;
             }
-
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
@@ -618,7 +693,6 @@ public class BlockEditText extends FrameLayout {
                         prevView.requestFocus();
                         prevView.setSelection(prevView.getText().length());
                     }
-
                     if (nextView != null && !nextView.getText().toString().isEmpty()) {
                         int length = getLength(index) - s.length();
                         length = length > nextView.getText().length() ? nextView.getText().length() : length;
@@ -628,7 +702,6 @@ public class BlockEditText extends FrameLayout {
                         editText.append(temp);
                         editText.setSelection(selection);
                         nextView.setText(editable);
-
                     }
                 }
                 BlockEditText.this.onTextChanged(s, start, before, count);
@@ -641,7 +714,7 @@ public class BlockEditText extends FrameLayout {
                 EditText nextView = editTexts.get(index + 1);
 
                 if (nextView != null)
-                    nextView.setEnabled(s.length() >= getLength(index));
+                    nextView.setEnabled(isEnabled && s.length() >= getLength(index));
                 updateCardIcon();
                 BlockEditText.this.afterTextChanged(s);
             }
@@ -741,4 +814,11 @@ public class BlockEditText extends FrameLayout {
         }
 
     }
+
+    public interface OnCardPrefixListener {
+
+        void onCardUpdate(CardPrefix cardPrefix);
+
+    }
+
 }

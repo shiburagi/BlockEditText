@@ -23,8 +23,6 @@ public class MainActivity extends AppCompatActivity {
         amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this, R.drawable.selector_edittext_round_border_line));
 
         BlockEditText cardEditText = findViewById(R.id.blockEditText_card);
-        cardEditText.addCardPrefix(CardPrefix.masterCard(this));
-        cardEditText.addCardPrefix(CardPrefix.visa(this));
         cardEditText.addCardPrefix(CardPrefix.amex(this));
 
         BlockEditText icNumberEditText = findViewById(R.id.blockEditText_ic_number);

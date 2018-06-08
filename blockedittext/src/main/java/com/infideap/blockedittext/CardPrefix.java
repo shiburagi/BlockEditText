@@ -61,16 +61,16 @@ class CardPrefix {
         return new CardPrefix(drawable, "34", "37");
     }
 
-    public static CardPrefix masterCard(Context context) {
+    public static CardPrefix mastercard(Context context) {
         CardPrefix cardPrefix =
-                masterCard(ContextCompat.getDrawable(context, R.drawable.ic_mastercard));
+                mastercard(ContextCompat.getDrawable(context, R.drawable.ic_mastercard));
         cardPrefix.lengthAt(0, 5);
         cardPrefix.lengthAt(1, 6);
         cardPrefix.lengthAt(2, 5);
         return cardPrefix;
     }
 
-    private static CardPrefix masterCard(Drawable drawable) {
+    private static CardPrefix mastercard(Drawable drawable) {
         return new CardPrefix(drawable, "50", "51", "52", "53", "54", "55");
     }
 

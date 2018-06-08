@@ -55,6 +55,8 @@
             app:bet_inputType="Integer"
             app:bet_hint="Credit Card"
             app:bet_numberOfBlock="4"
+            app:bet_cardIconSize="48dp"
+            app:bet_cardPrefix="Mastercard|Visa"
             app:bet_editTextBackground="@drawable/selector_edittext_round_border"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

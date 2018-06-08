@@ -7,6 +7,7 @@
         <attr name="bet_textSize" format="dimension" />
         <attr name="bet_hintTextSize" format="dimension" />
         <attr name="bet_separatorTextSize" format="dimension" />
+        <attr name="bet_cardIconSize" format="dimension" />
         <attr name="bet_hint" format="string" />
         <attr name="bet_text" format="string" />
         <attr name="bet_separatorCharacter" format="string" />
@@ -14,9 +15,16 @@
         <attr name="bet_hintTextAppearance" format="reference" />
         <attr name="bet_separatorTextAppearance" format="reference" />
         <attr name="bet_editTextBackground" format="reference" />
+        <attr name="bet_showCardIcon" format="boolean" />
+
         <attr name="bet_inputType" format="enum">
             <enum name="Text" value="1" />
             <enum name="Integer" value="2"/>
+        </attr>
+        <attr name="bet_cardPrefix">
+            <flag name="Amex" value="1"/>
+            <flag name="Mastercard" value="2"/>
+            <flag name="Visa" value="3" />
         </attr>
     </declare-styleable>
 
