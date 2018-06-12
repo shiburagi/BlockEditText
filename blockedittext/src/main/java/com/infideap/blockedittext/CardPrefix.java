@@ -45,7 +45,7 @@ public class CardPrefix {
         return cardPrefix;
     }
 
-    private static CardPrefix visa(Drawable drawable) {
+    public static CardPrefix visa(Drawable drawable) {
         return new CardPrefix(drawable, "4");
     }
 
@@ -57,7 +57,7 @@ public class CardPrefix {
         return cardPrefix;
     }
 
-    private static CardPrefix amex(Drawable drawable) {
+    public static CardPrefix amex(Drawable drawable) {
         return new CardPrefix(drawable, "34", "37");
     }
 
@@ -70,7 +70,7 @@ public class CardPrefix {
         return cardPrefix;
     }
 
-    private static CardPrefix mastercard(Drawable drawable) {
+    public static CardPrefix mastercard(Drawable drawable) {
         return new CardPrefix(drawable, "50", "51", "52", "53", "54", "55");
     }
 
