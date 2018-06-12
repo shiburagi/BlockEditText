@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
 import android.util.SparseIntArray;
 
-class CardPrefix {
+public class CardPrefix {
 
 
     private String[] prefixes;
