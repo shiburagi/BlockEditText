@@ -100,6 +100,11 @@ amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this, R.drawable.sel
 
 amexEditText.setSelection(0);
 
+
+amexEditText.addCardPrefix(CardPrefix.amex(this))
+amexEditText.addCardPrefix(CardPrefix.amex(amexDrawable))
+amexEditText.addCardPrefix(new CardPrefix(this, R.drawable.ic_amex, "34"))
+
 ```
 
 ## Contact
