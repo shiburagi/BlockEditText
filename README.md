@@ -4,6 +4,9 @@
 
 Block EditText is a library provide an input view present in multiple block style that common use in **TAC** or **credit card field**.
 
+#### Kotlin Example : [BlockEditText-Kotlin](https://github.com/shiburagi/BlockEditText-Kotlin)
+
+
 ![Alt Text](https://raw.githubusercontent.com/shiburagi/BlockEditText/preview/preview2.gif)
 
 Android 9.0+ support
@@ -17,14 +20,14 @@ a dependency:
 <dependency>
   <groupId>com.infideap.blockedittext</groupId>
   <artifactId>block-edittext</artifactId>
-  <version>0.0.5</version>
+  <version>0.0.6</version>
   <type>pom</type>
 </dependency>
 ```
 #### Gradle
 ```groovy
 dependencies {
-   compile 'com.infideap.blockedittext:block-edittext:0.0.5'
+   implementation 'com.infideap.blockedittext:block-edittext:0.0.6'
 }
 ```
 
@@ -99,6 +102,12 @@ amexEditText.setSeparatorTextAppearance(android.support.v7.appcompat.R.style.Bas
 amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this, R.drawable.selector_edittext_round_border_line));
 
 amexEditText.setSelection(0);
+
+
+amexEditText.addCardPrefix(CardPrefix.amex(this))
+amexEditText.addCardPrefix(CardPrefix.amex(amexDrawable))
+amexEditText.addCardPrefix(new CardPrefix(this, R.drawable.ic_amex, "34"))
+amexEditText.addCardPrefix(new CardPrefix(amexDrawable, "34"))
 
 ```
 
