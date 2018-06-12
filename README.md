@@ -4,7 +4,10 @@
 
 Block EditText is a library provide an input view present in multiple block style that common use in **TAC** or **credit card field**.
 
-Kotlin Example : [BlockEditText-Kotlin](https://github.com/shiburagi/BlockEditText-Kotlin)
+### Kotlin Example : [BlockEditText-Kotlin](https://github.com/shiburagi/BlockEditText-Kotlin)
+|
+
+|
 
 ![Alt Text](https://raw.githubusercontent.com/shiburagi/BlockEditText/preview/preview2.gif)
 
