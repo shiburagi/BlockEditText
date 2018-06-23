@@ -9,7 +9,7 @@ Block EditText is a library provide an input view present in multiple block styl
 
 ![Alt Text](https://raw.githubusercontent.com/shiburagi/BlockEditText/preview/preview2.gif)
 
-Android 9.0+ support
+Android 14.0+ support
 
 ---
 
