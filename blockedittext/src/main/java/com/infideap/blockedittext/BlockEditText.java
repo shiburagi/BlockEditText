@@ -677,13 +677,12 @@ public class BlockEditText extends FrameLayout {
                 prevLength = s.length();
                 selection = editText.getSelectionStart();
                 beforSequence = sequence;
-                sequence = getText();
                 for (int i = 0; i < index; i++) {
                     start+=getLength(i);
                 }
                 this.start = start;
                 this.before  = beforSequence.length();
-                BlockEditText.this.beforeTextChanged(beforSequence,  this.start, this.before, sequence.length());
+                BlockEditText.this.beforeTextChanged(beforSequence,  this.start, this.before, this.before+(after-count));
             }
 
             @Override
@@ -712,6 +711,7 @@ public class BlockEditText extends FrameLayout {
                         nextView.setText(editable);
                     }
                 }
+                sequence = getText();
                 BlockEditText.this.onTextChanged(sequence, this.start, this.before, sequence.length());
 
 
