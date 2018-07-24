@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length()>=6){
+                if(s.length()>=amexEditText.getMaxLength()){
                     amexEditText.setBackgroundColor(Color.GREEN);
                 }else
                     amexEditText.setBackgroundColor(Color.TRANSPARENT);
