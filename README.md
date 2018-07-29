@@ -81,7 +81,7 @@ you can include it by **download this project** and **import /blockedittext** as
 ```
 
 
-**Customize**
+### Customize
 ```java
 amexEditText.setNumberOfBlock(3);
 amexEditText.setDefaultLength(4);
@@ -116,7 +116,7 @@ amexEditText.addCardPrefix(new CardPrefix(amexDrawable, "34"))
 
 ```
 
-**Listener**
+### Listener
 
 ```java
 amexEditText.setTextChangedListener(TextWatcher watcher)
