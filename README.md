@@ -114,10 +114,15 @@ amexEditText.addCardPrefix(CardPrefix.amex(amexDrawable))
 amexEditText.addCardPrefix(new CardPrefix(this, R.drawable.ic_amex, "34"))
 amexEditText.addCardPrefix(new CardPrefix(amexDrawable, "34"))
 
+```
+
+**Listener**
+
+```java
 amexEditText.setTextChangedListener(TextWatcher watcher)
 amexEditText.setOnCardPrefixListener(OnCardPrefixListener listener)
-
 ```
+
 
 ## Contact
 For any enquiries, please send an email to tr32010@gmail.com. 
