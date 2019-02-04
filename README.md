@@ -25,14 +25,14 @@ a dependency:
 <dependency>
   <groupId>com.infideap.blockedittext</groupId>
   <artifactId>block-edittext</artifactId>
-  <version>0.0.7</version>
+  <version>0.1.1</version>
   <type>pom</type>
 </dependency>
 ```
 #### Gradle
 ```groovy
 dependencies {
-   implementation 'com.infideap.blockedittext:block-edittext:0.0.7'
+   implementation 'com.infideap.blockedittext:block-edittext:0.1.1'
 }
 ```
 
