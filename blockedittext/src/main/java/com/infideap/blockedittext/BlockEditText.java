@@ -675,16 +675,24 @@ public class BlockEditText extends FrameLayout {
 
     private TextWatcher createTextChangeListener(final AEditText editText, final int index) {
         return new TextWatcher() {
+            public CharSequence sequence="";
+            public CharSequence beforSequence="";
             int prevLength = 0;
-
             int selection = 0;
+
+            int start, before;
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 prevLength = s.length();
                 selection = editText.getSelectionStart();
-                BlockEditText.this.beforeTextChanged(s, start, count, after);
-
+                beforSequence = sequence;
+                for (int i = 0; i < index; i++) {
+                    start+=getLength(i);
+                }
+                this.start = start;
+                this.before  = beforSequence.length();
+                BlockEditText.this.beforeTextChanged(beforSequence,  this.start, this.before, this.before+(after-count));
             }
 
             @Override
@@ -713,7 +721,8 @@ public class BlockEditText extends FrameLayout {
                         nextView.setText(editable);
                     }
                 }
-                BlockEditText.this.onTextChanged(s, start, before, count);
+                sequence = getText();
+                BlockEditText.this.onTextChanged(sequence, this.start, this.before, sequence.length());
 
 
             }

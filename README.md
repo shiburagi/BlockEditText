@@ -25,14 +25,14 @@ a dependency:
 <dependency>
   <groupId>com.infideap.blockedittext</groupId>
   <artifactId>block-edittext</artifactId>
-  <version>0.0.6</version>
+  <version>0.0.7</version>
   <type>pom</type>
 </dependency>
 ```
 #### Gradle
 ```groovy
 dependencies {
-   implementation 'com.infideap.blockedittext:block-edittext:0.0.6'
+   implementation 'com.infideap.blockedittext:block-edittext:0.0.7'
 }
 ```
 
@@ -81,7 +81,7 @@ you can include it by **download this project** and **import /blockedittext** as
 ```
 
 
-**Customize**
+### Customize
 ```java
 amexEditText.setNumberOfBlock(3);
 amexEditText.setDefaultLength(4);
@@ -115,6 +115,14 @@ amexEditText.addCardPrefix(new CardPrefix(this, R.drawable.ic_amex, "34"))
 amexEditText.addCardPrefix(new CardPrefix(amexDrawable, "34"))
 
 ```
+
+### Listener
+
+```java
+amexEditText.setTextChangedListener(TextWatcher watcher)
+amexEditText.setOnCardPrefixListener(OnCardPrefixListener listener)
+```
+
 
 ## Contact
 For any enquiries, please send an email to tr32010@gmail.com. 
