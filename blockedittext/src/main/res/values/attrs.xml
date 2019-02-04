@@ -16,6 +16,7 @@
         <attr name="bet_separatorTextAppearance" format="reference" />
         <attr name="bet_editTextBackground" format="reference" />
         <attr name="bet_showCardIcon" format="boolean" />
+        <attr name="bet_style" format="reference" />
 
         <attr name="bet_inputType" format="enum">
             <enum name="Text" value="1" />

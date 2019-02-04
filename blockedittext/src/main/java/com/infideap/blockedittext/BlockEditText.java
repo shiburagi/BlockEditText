@@ -17,7 +17,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.ActionMode;
@@ -74,6 +73,7 @@ public class BlockEditText extends FrameLayout {
     private int cardIconSize = (int) Utils.convertDpToPixel(48);
     private boolean isEnabled = true;
     private boolean isShowCardIcon;
+    private int editTextStyle;
 
     public BlockEditText(@NonNull Context context) {
         super(context);
@@ -185,6 +185,10 @@ public class BlockEditText extends FrameLayout {
                 true
         );
 
+        editTextStyle = a.getResourceId(
+                R.styleable.BlockEditText_bet_style,-1
+        );
+
         int cardPrefix = a.getInt(
                 R.styleable.BlockEditText_bet_cardPrefix,
                 0
@@ -231,7 +235,12 @@ public class BlockEditText extends FrameLayout {
             final int length = getLength(i);
             final AEditText editText;
             if (editTexts.get(i) == null) {
-                editText = new AEditText(getContext());
+                if (editTextStyle==-1){
+                    editText = new AEditText(getContext());
+                }else{
+                    editText = new AEditText(getContext(), null, editTextStyle);
+
+                }
                 editText.addTextChangedListener(createTextChangeListener(editText, i));
                 editTexts.put(i, editText);
                 editText.setOnFocusChangeListener(new OnFocusChangeListener() {

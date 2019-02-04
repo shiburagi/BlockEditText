@@ -31,6 +31,7 @@
             android:id="@+id/blockEditText_visa"
             app:bet_defaultLength="4"
             app:bet_numberOfBlock="4"
+            style="@style/EditText.Border"
             app:bet_text="131321323-13213-21321312"
             app:bet_inputType="Integer"
             app:bet_hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
