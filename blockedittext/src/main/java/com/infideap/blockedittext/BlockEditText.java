@@ -67,6 +67,8 @@ public class BlockEditText extends FrameLayout {
     private ColorStateList hintColorDefault;
     private ColorStateList hintColorFocus;
 
+    private boolean shiftPosition = true;
+
     private List<CardPrefix> cardPrefixes = new ArrayList<>();
     private ImageView iconImageView;
     private OnCardPrefixListener cardPrefixListener;
@@ -180,13 +182,14 @@ public class BlockEditText extends FrameLayout {
                 inputType
         );
 
-        isShowCardIcon = a.getBoolean(
+
+        shiftPosition = a.getBoolean(
                 R.styleable.BlockEditText_bet_showCardIcon,
                 true
         );
 
         editTextStyle = a.getResourceId(
-                R.styleable.BlockEditText_bet_style,-1
+                R.styleable.BlockEditText_bet_style, -1
         );
 
         int cardPrefix = a.getInt(
@@ -207,6 +210,10 @@ public class BlockEditText extends FrameLayout {
 
         setHintTextAppearance(hintTextAppearance);
 
+        shiftPosition = (a.getBoolean(
+                R.styleable.BlockEditText_bet_shiftPosition,
+                true
+        ));
 
         initLayout();
         tempStr = a.getString(R.styleable.BlockEditText_bet_text);
@@ -235,9 +242,9 @@ public class BlockEditText extends FrameLayout {
             final int length = getLength(i);
             final AEditText editText;
             if (editTexts.get(i) == null) {
-                if (editTextStyle==-1){
+                if (editTextStyle == -1) {
                     editText = new AEditText(getContext());
-                }else{
+                } else {
                     editText = new AEditText(getContext(), null, editTextStyle);
 
                 }
@@ -289,10 +296,7 @@ public class BlockEditText extends FrameLayout {
 
             editText.setText(null);
 
-            if (i > 0)
-                editText.setEnabled(false);
-            else
-                editText.setEnabled(isEnabled);
+            setEditTextEnable(editText, i);
 
 
         }
@@ -305,6 +309,17 @@ public class BlockEditText extends FrameLayout {
 
     }
 
+    private void setEditTextEnable(AEditText editText, int i) {
+        if (shiftPosition && i > 0)
+            editText.setEnabled(false);
+        else
+            editText.setEnabled(isEnabled);
+    }
+
+    Editable getText(EditText editText) {
+        return editText.getText();
+    }
+
     private OnKeyListener createKeyListener(final AEditText editText, final int i) {
         return new OnKeyListener() {
             @Override
@@ -314,8 +329,10 @@ public class BlockEditText extends FrameLayout {
                         AEditText prevEditText = editTexts.get(i - 1);
                         if (prevEditText != null) {
                             prevEditText.requestFocus();
-                            prevEditText.getEditableText().delete(prevEditText.getText().length() - 1, prevEditText.getText().length());
-                            prevEditText.setSelection(prevEditText.getText().length() - 1);
+                            if (editText.length() > 0) {
+                                prevEditText.getEditableText().delete(getText(prevEditText).length() - 1, prevEditText.getText().length());
+                                prevEditText.setSelection(prevEditText.getText().length() - 1);
+                            }
                             return true;
 
                         }
@@ -568,13 +585,23 @@ public class BlockEditText extends FrameLayout {
         }
     }
 
-    public void setShowCardIcon(boolean isShowCardIcon){
+    public void setShowCardIcon(boolean isShowCardIcon) {
         this.isShowCardIcon = isShowCardIcon;
         hideOrShowCardIcon();
     }
 
+    public void setShiftPosition(boolean b) {
+
+        shiftPosition = b;
+        initLayout();
+    }
+
     public boolean isEnabled() {
         return isEnabled;
+    }
+
+    public boolean isShiftPosition() {
+        return shiftPosition;
     }
 
     private void hideOrShowCardIcon() {
@@ -675,8 +702,8 @@ public class BlockEditText extends FrameLayout {
 
     private TextWatcher createTextChangeListener(final AEditText editText, final int index) {
         return new TextWatcher() {
-            public CharSequence sequence="";
-            public CharSequence beforSequence="";
+            public CharSequence sequence = "";
+            public CharSequence beforSequence = "";
             int prevLength = 0;
             int selection = 0;
 
@@ -688,11 +715,11 @@ public class BlockEditText extends FrameLayout {
                 selection = editText.getSelectionStart();
                 beforSequence = sequence;
                 for (int i = 0; i < index; i++) {
-                    start+=getLength(i);
+                    start += getLength(i);
                 }
                 this.start = start;
-                this.before  = beforSequence.length();
-                BlockEditText.this.beforeTextChanged(beforSequence,  this.start, this.before, this.before+(after-count));
+                this.before = beforSequence.length();
+                BlockEditText.this.beforeTextChanged(beforSequence, this.start, this.before, this.before + (after - count));
             }
 
             @Override
@@ -705,7 +732,8 @@ public class BlockEditText extends FrameLayout {
                     else if (s.length() == 0 && prevView != null)
                         prevView.requestFocus();
 
-                if (s.length() < getLength(index)) {
+
+                if (shiftPosition && s.length() < getLength(index)) {
                     if (editText.getSelectionStart() == 0 && editText.isFocused() && prevView != null) {
                         prevView.requestFocus();
                         prevView.setSelection(prevView.getText().length());
@@ -731,7 +759,7 @@ public class BlockEditText extends FrameLayout {
             public void afterTextChanged(Editable s) {
                 EditText nextView = editTexts.get(index + 1);
 
-                if (nextView != null)
+                if (shiftPosition && nextView != null)
                     nextView.setEnabled(isEnabled && s.length() >= getLength(index));
                 updateCardIcon();
                 BlockEditText.this.afterTextChanged(s);

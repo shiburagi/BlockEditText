@@ -4,40 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="com.infideap.blockedittextexample.MainActivity">
 
     <LinearLayout
-        android:padding="8dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="8dp">
 
         <com.infideap.blockedittext.BlockEditText
             android:id="@+id/blockEditText_tac"
-            app:bet_defaultLength="1"
-            app:bet_numberOfBlock="4"
-            app:bet_inputType="Integer"
-            app:bet_hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:bet_hint="TAC"
-            app:bet_textSize="18sp"
             android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            app:bet_defaultLength="1"
             app:bet_editTextBackground="@drawable/selector_edittext_round_border"
-            android:layout_height="wrap_content" />
+            app:bet_hint="TAC"
+            app:bet_hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:bet_inputType="Integer"
+            app:bet_numberOfBlock="4"
+            app:bet_textSize="18sp" />
+
         <Space
             android:layout_width="wrap_content"
             android:layout_height="16dp" />
 
         <com.infideap.blockedittext.BlockEditText
             android:id="@+id/blockEditText_visa"
-            app:bet_defaultLength="4"
-            app:bet_numberOfBlock="4"
             style="@style/EditText.Border"
-            app:bet_text="131321323-13213-21321312"
-            app:bet_inputType="Integer"
-            app:bet_hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:bet_hint="Visa/Mastercard"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:bet_defaultLength="4"
+            app:bet_hint="Visa/Mastercard"
+            app:bet_hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:bet_inputType="Integer"
+            app:bet_numberOfBlock="4"
+            app:bet_text="131321323-13213-21321312" />
+
         <Space
             android:layout_width="wrap_content"
             android:layout_height="16dp" />
@@ -46,21 +48,22 @@
             android:id="@+id/blockEditText_amex"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
+
         <Space
             android:layout_width="wrap_content"
             android:layout_height="16dp" />
 
         <com.infideap.blockedittext.BlockEditText
             android:id="@+id/blockEditText_card"
-            app:bet_defaultLength="4"
-            app:bet_inputType="Integer"
-            app:bet_hint="Credit Card"
-            app:bet_numberOfBlock="4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:bet_cardIconSize="48dp"
             app:bet_cardPrefix="Mastercard|Visa"
+            app:bet_defaultLength="4"
             app:bet_editTextBackground="@drawable/selector_edittext_round_border"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            app:bet_hint="Credit Card"
+            app:bet_inputType="Integer"
+            app:bet_numberOfBlock="4" />
 
         <Space
             android:layout_width="wrap_content"
@@ -68,16 +71,35 @@
 
         <com.infideap.blockedittext.BlockEditText
             android:id="@+id/blockEditText_ic_number"
-            app:bet_defaultLength="6"
-            app:bet_numberOfBlock="4"
-            app:bet_text="980201-01-1234"
-            app:bet_inputType="Integer"
-            app:bet_hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
-            app:bet_hint="IC Number"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:bet_defaultLength="6"
             app:bet_editTextBackground="@drawable/selector_edittext_round_border"
-            android:layout_height="wrap_content" />
+            app:bet_hint="IC Number"
+            app:bet_hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
+            app:bet_inputType="Integer"
+            app:bet_numberOfBlock="4"
+            app:bet_text="980201-01-1234" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginTop="16dp"
+            android:background="#aaa"
+            android:layout_marginBottom="8dp" />
+
+        <com.infideap.blockedittext.BlockEditText
+            android:id="@+id/blockEditText_unshift_position"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:bet_cardIconSize="48dp"
+            app:bet_cardPrefix="Mastercard|Visa"
+            app:bet_defaultLength="4"
+            app:bet_shiftPosition="false"
+            app:bet_editTextBackground="@drawable/selector_edittext_round_border"
+            app:bet_hint="Unshift Block"
+            app:bet_inputType="Integer"
+            app:bet_numberOfBlock="4" />
     </LinearLayout>
 
 

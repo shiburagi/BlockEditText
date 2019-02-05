@@ -1,4 +1,4 @@
-package com.infideap.blockedittext;
+package com.infideap.blockedittextexample;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

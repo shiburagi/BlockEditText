@@ -1,4 +1,4 @@
-package com.infideap.blockedittext;
+package com.infideap.blockedittextexample;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -7,6 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+
+import com.infideap.blockedittext.BlockEditText;
+import com.infideap.blockedittext.CardPrefix;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,12 +21,12 @@ public class MainActivity extends AppCompatActivity {
         final BlockEditText amexEditText = findViewById(R.id.blockEditText_amex);
         amexEditText.setNumberOfBlock(3);
         amexEditText.setDefaultLength(4);
-        amexEditText.setLengthAt(1,6);
-        amexEditText.setLengthAt(2,5);
+        amexEditText.setLengthAt(1, 6);
+        amexEditText.setLengthAt(2, 5);
         amexEditText.setHint("Amex");
         amexEditText.setSeparatorCharacter('-');
         amexEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
-        amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this, R.drawable.selector_edittext_round_border_line));
+        amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this, com.infideap.blockedittext.R.drawable.selector_edittext_round_border_line));
 
         amexEditText.setTextChangedListener(new TextWatcher() {
             @Override
@@ -33,9 +36,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(s.length()>=amexEditText.getMaxLength()){
+                if (s.length() >= amexEditText.getMaxLength()) {
                     amexEditText.setBackgroundColor(Color.GREEN);
-                }else
+                } else
                     amexEditText.setBackgroundColor(Color.TRANSPARENT);
 
             }
@@ -53,9 +56,11 @@ public class MainActivity extends AppCompatActivity {
         BlockEditText icNumberEditText = findViewById(R.id.blockEditText_ic_number);
         icNumberEditText.setNumberOfBlock(3);
         icNumberEditText.setDefaultLength(6);
-        icNumberEditText.setLengthAt(1,2);
-        icNumberEditText.setLengthAt(2,4);
+        icNumberEditText.setLengthAt(1, 2);
+        icNumberEditText.setLengthAt(2, 4);
 
         icNumberEditText.setSelection(0);
+
+
     }
 }

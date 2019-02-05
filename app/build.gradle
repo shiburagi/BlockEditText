@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.infideap.blockedittext"
+        applicationId "com.infideap.blockedittextexample"
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
@@ -25,6 +25,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-//    implementation project(':blockedittext')
-    implementation 'com.infideap.blockedittext:block-edittext:0.0.6'
+    implementation project(':blockedittext')
+//    implementation 'com.infideap.blockedittext:block-edittext:0.0.6'
 }
