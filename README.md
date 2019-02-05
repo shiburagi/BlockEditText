@@ -107,7 +107,7 @@ amexEditText.setSeparatorTextAppearance(android.support.v7.appcompat.R.style.Bas
 amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this, R.drawable.selector_edittext_round_border_line));
 
 amexEditText.setSelection(0);
-
+amexEditText.setShiftPosition(true);
 
 amexEditText.addCardPrefix(CardPrefix.amex(this))
 amexEditText.addCardPrefix(CardPrefix.amex(amexDrawable))
