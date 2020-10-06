@@ -1,78 +1,61 @@
-package com.infideap.blockedittext;
+package com.infideap.blockedittext
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import androidx.core.content.ContextCompat;
-import android.util.SparseIntArray;
+import android.content.Context
+import android.graphics.drawable.Drawable
+import android.util.SparseIntArray
+import androidx.core.content.ContextCompat
 
-public class CardPrefix {
+class CardPrefix(icon: Drawable?, vararg prefix: String) {
+    val prefixes: Array<String>
+    val icon: Drawable?
+    val lengths = SparseIntArray()
 
+    constructor(context: Context?, iconRes: Int, vararg prefix: String?) : this(ContextCompat.getDrawable(context!!, iconRes), *prefix) {}
 
-    private String[] prefixes;
-    private Drawable icon;
-    private SparseIntArray lengths = new SparseIntArray();
-
-    public CardPrefix(Drawable icon, String... prefix) {
-        this.prefixes = prefix;
-        this.icon = icon;
+    fun lengthAt(index: Int, length: Int) {
+        lengths.put(index, length)
     }
 
-    public CardPrefix(Context context, int iconRes, String... prefix) {
-        this(ContextCompat.getDrawable(context, iconRes), prefix);
+    companion object {
+        fun visa(context: Context?): CardPrefix {
+            val cardPrefix = visa(ContextCompat.getDrawable(context!!, R.drawable.ic_visa))
+            cardPrefix.lengthAt(0, 5)
+            cardPrefix.lengthAt(1, 6)
+            cardPrefix.lengthAt(2, 5)
+            return cardPrefix
+        }
+
+        fun visa(drawable: Drawable?): CardPrefix {
+            return CardPrefix(drawable, "4")
+        }
+
+        fun amex(context: Context?): CardPrefix {
+            val cardPrefix = amex(ContextCompat.getDrawable(context!!, R.drawable.ic_amex))
+            cardPrefix.lengthAt(0, 4)
+            cardPrefix.lengthAt(1, 6)
+            cardPrefix.lengthAt(2, 5)
+            return cardPrefix
+        }
+
+        fun amex(drawable: Drawable?): CardPrefix {
+            return CardPrefix(drawable, "34", "37")
+        }
+
+        fun mastercard(context: Context?): CardPrefix {
+            val cardPrefix = mastercard(ContextCompat.getDrawable(context!!, R.drawable.ic_mastercard))
+            cardPrefix.lengthAt(0, 5)
+            cardPrefix.lengthAt(1, 6)
+            cardPrefix.lengthAt(2, 5)
+            return cardPrefix
+        }
+
+        fun mastercard(drawable: Drawable?): CardPrefix {
+            return CardPrefix(drawable, "50", "51", "52", "53", "54", "55")
+        }
     }
 
-    public void lengthAt(int index, int length) {
-        lengths.put(index, length);
+    init {
+        prefixes = prefix
+        this.icon = icon
     }
-
-    public SparseIntArray getLengths() {
-        return lengths;
-    }
-
-    public Drawable getIcon() {
-        return icon;
-    }
-
-    public String[] getPrefixes() {
-        return prefixes;
-    }
-
-    public static CardPrefix visa(Context context) {
-        CardPrefix cardPrefix = visa(ContextCompat.getDrawable(context, R.drawable.ic_visa));
-        cardPrefix.lengthAt(0, 5);
-        cardPrefix.lengthAt(1, 6);
-        cardPrefix.lengthAt(2, 5);
-        return cardPrefix;
-    }
-
-    public static CardPrefix visa(Drawable drawable) {
-        return new CardPrefix(drawable, "4");
-    }
-
-    public static CardPrefix amex(Context context) {
-        CardPrefix cardPrefix = amex(ContextCompat.getDrawable(context, R.drawable.ic_amex));
-        cardPrefix.lengthAt(0, 4);
-        cardPrefix.lengthAt(1, 6);
-        cardPrefix.lengthAt(2, 5);
-        return cardPrefix;
-    }
-
-    public static CardPrefix amex(Drawable drawable) {
-        return new CardPrefix(drawable, "34", "37");
-    }
-
-    public static CardPrefix mastercard(Context context) {
-        CardPrefix cardPrefix =
-                mastercard(ContextCompat.getDrawable(context, R.drawable.ic_mastercard));
-        cardPrefix.lengthAt(0, 5);
-        cardPrefix.lengthAt(1, 6);
-        cardPrefix.lengthAt(2, 5);
-        return cardPrefix;
-    }
-
-    public static CardPrefix mastercard(Drawable drawable) {
-        return new CardPrefix(drawable, "50", "51", "52", "53", "54", "55");
-    }
-
-
 }
