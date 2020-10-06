@@ -1,832 +1,679 @@
-package com.infideap.blockedittext;
+package com.infideap.blockedittext
 
-import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.text.Editable;
-import android.text.InputFilter;
-import android.text.InputType;
-import android.text.Spanned;
-import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.AttributeSet;
-import android.util.SparseArray;
-import android.util.SparseIntArray;
-import android.view.ActionMode;
-import android.view.Gravity;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.drawable.Drawable
+import android.os.Build
+import android.text.*
+import android.util.AttributeSet
+import android.util.SparseArray
+import android.util.SparseIntArray
+import android.view.*
+import android.view.View.OnFocusChangeListener
+import android.view.View.OnKeyListener
+import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import com.app.infideap.stylishwidget.util.Utils
+import com.app.infideap.stylishwidget.view.AEditText
+import com.app.infideap.stylishwidget.view.ATextView
+import java.util.*
 
-import com.app.infideap.stylishwidget.util.Utils;
-import com.app.infideap.stylishwidget.view.AEditText;
-import com.app.infideap.stylishwidget.view.ATextView;
+class BlockEditText : FrameLayout {
+    private var noOfBlock = 1
+    private var linearLayout: LinearLayout? = null
+    private var blockLinearLayout: LinearLayout? = null
+    private val lengths = SparseIntArray()
+    private var lengthUsed: SparseIntArray? = null
+    private var defaultLength = 1
+    private var hintTextView: ATextView? = null
+    private var inputType = InputType.TYPE_CLASS_TEXT
+    private var watcher: TextWatcher? = null
+    private var callback: ActionMode.Callback? = null
+    private val editTexts = SparseArray<AEditText?>()
+    private var separator: Char? = null
+    private var separatorTextAppearance = androidx.appcompat.R.style.Base_TextAppearance_AppCompat_Medium
+    private var separatorPadding = 16
+    private var separatorTextSize = 0f
+    private var textSize = 0f
+    private var hintTextSize = 0f
+    private var textAppearance = androidx.appcompat.R.style.Base_TextAppearance_AppCompat_Medium
+    private var hintTextAppearance = androidx.appcompat.R.style.Base_TextAppearance_AppCompat_Medium
+    private var editTextBackground: Drawable? = null
+    private var hint: String? = null
+    private var hintColorDefault: ColorStateList? = null
+    private var hintColorFocus: ColorStateList? = null
+    private val cardPrefixes: MutableList<CardPrefix> = ArrayList()
+    private var iconImageView: ImageView? = null
+    private var cardPrefixListener: OnCardPrefixListener? = null
+    private var cardIconSize = Utils.convertDpToPixel(48f).toInt()
+    private var isEnabled = true
+    private var isShowCardIcon = false
 
-import java.util.ArrayList;
-import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
-
-public class BlockEditText extends FrameLayout {
-    private static final int AMEX = 1;
-    private static final int MASTERCARD = 2;
-    private static final int VISA = 3;
-
-    private int noOfBlock = 1;
-    private LinearLayout linearLayout;
-    private LinearLayout blockLinearLayout;
-    private SparseIntArray lengths = new SparseIntArray();
-    private SparseIntArray lengthUsed;
-    private int defaultLength = 1;
-    private ATextView hintTextView;
-    private int inputType = InputType.TYPE_CLASS_TEXT;
-    private TextWatcher watcher;
-    private ActionMode.Callback callback;
-    private SparseArray<AEditText> editTexts = new SparseArray<>();
-    private Character separator;
-    private int separatorTextAppearance = androidx.appcompat.R.style.Base_TextAppearance_AppCompat_Medium;
-    private int separatorPadding = 16;
-    private float separatorTextSize;
-    private float textSize;
-    private float hintTextSize;
-    private int textAppearance = androidx.appcompat.R.style.Base_TextAppearance_AppCompat_Medium;
-    private int hintTextAppearance = androidx.appcompat.R.style.Base_TextAppearance_AppCompat_Medium;
-    private Drawable editTextBackground;
-    private String hint;
-    private ColorStateList hintColorDefault;
-    private ColorStateList hintColorFocus;
-
-    private List<CardPrefix> cardPrefixes = new ArrayList<>();
-    private ImageView iconImageView;
-    private OnCardPrefixListener cardPrefixListener;
-    private int cardIconSize = (int) Utils.convertDpToPixel(48);
-    private boolean isEnabled = true;
-    private boolean isShowCardIcon;
-
-    public BlockEditText(@NonNull Context context) {
-        super(context);
-        init(context, null);
-
+    constructor(context: Context) : super(context) {
+        init(context, null)
     }
 
-    public BlockEditText(@NonNull Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-        init(context, attrs);
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
+        init(context, attrs)
     }
 
-    public BlockEditText(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        init(context, attrs);
-
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+        init(context, attrs)
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public BlockEditText(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
-        init(context, attrs);
-
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int, defStyleRes: Int) : super(context, attrs, defStyleAttr, defStyleRes) {
+        init(context, attrs)
     }
 
-    private void init(Context context, AttributeSet attrs) {
-        lengthUsed = lengths;
-
-        linearLayout = new LinearLayout(getContext());
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-        linearLayout.setLayoutParams(createWidthMatchParentLayoutParams());
-
-        blockLinearLayout = new LinearLayout(getContext());
-        blockLinearLayout.setOrientation(LinearLayout.HORIZONTAL);
-        blockLinearLayout.setLayoutParams(createWidthMatchParentLayoutParams());
-
-        linearLayout.addView(blockLinearLayout);
-        addView(linearLayout);
-
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.BlockEditText);
-        editTextBackground = a.getDrawable(R.styleable.BlockEditText_bet_editTextBackground);
-        hint = a.getString(R.styleable.BlockEditText_bet_hint);
-        setHint(hint);
-
-        String tempStr = a.getString(R.styleable.BlockEditText_bet_separatorCharacter);
+    private fun init(context: Context, attrs: AttributeSet?) {
+        lengthUsed = lengths
+        linearLayout = LinearLayout(getContext())
+        linearLayout!!.orientation = LinearLayout.VERTICAL
+        linearLayout!!.layoutParams = createWidthMatchParentLayoutParams()
+        blockLinearLayout = LinearLayout(getContext())
+        blockLinearLayout!!.orientation = LinearLayout.HORIZONTAL
+        blockLinearLayout!!.layoutParams = createWidthMatchParentLayoutParams()
+        linearLayout!!.addView(blockLinearLayout)
+        addView(linearLayout)
+        val a = context.obtainStyledAttributes(attrs, R.styleable.BlockEditText)
+        editTextBackground = a.getDrawable(R.styleable.BlockEditText_bet_editTextBackground)
+        hint = a.getString(R.styleable.BlockEditText_bet_hint)
+        setHint(hint)
+        var tempStr = a.getString(R.styleable.BlockEditText_bet_separatorCharacter)
         if (!TextUtils.isEmpty(tempStr)) {
-            separator = tempStr.charAt(0);
+            separator = tempStr!![0]
         }
-
         noOfBlock = a.getInt(
                 R.styleable.BlockEditText_bet_numberOfBlock,
                 noOfBlock
-        );
-
+        )
         defaultLength = a.getInt(
                 R.styleable.BlockEditText_bet_defaultLength,
                 defaultLength
-        );
-
+        )
         textAppearance = a.getResourceId(
                 R.styleable.BlockEditText_bet_hintTextAppearance,
                 textAppearance
-        );
-
+        )
         hintTextAppearance = a.getResourceId(
                 R.styleable.BlockEditText_bet_hintTextAppearance,
                 hintTextAppearance
-        );
-
+        )
         separatorTextAppearance = a.getResourceId(
                 R.styleable.BlockEditText_bet_separatorTextAppearance,
                 separatorTextAppearance
-        );
-
+        )
         textSize = a.getDimension(
                 R.styleable.BlockEditText_bet_textSize,
                 textSize
-        );
-
-
+        )
         hintTextSize = a.getDimension(
                 R.styleable.BlockEditText_bet_hintTextSize,
                 hintTextSize
-        );
-
+        )
         separatorTextSize = a.getDimension(
                 R.styleable.BlockEditText_bet_separatorTextSize,
                 separatorTextSize
-        );
-
+        )
         cardIconSize = a.getDimensionPixelOffset(
                 R.styleable.BlockEditText_bet_cardIconSize,
                 cardIconSize
-        );
-
+        )
         separatorPadding = a.getDimensionPixelOffset(
                 R.styleable.BlockEditText_bet_hintTextSize,
                 separatorPadding
-        );
-
+        )
         inputType = a.getInt(
                 R.styleable.BlockEditText_bet_inputType,
                 inputType
-        );
-
+        )
         isShowCardIcon = a.getBoolean(
                 R.styleable.BlockEditText_bet_showCardIcon,
                 true
-        );
-
-        int cardPrefix = a.getInt(
+        )
+        val cardPrefix = a.getInt(
                 R.styleable.BlockEditText_bet_cardPrefix,
                 0
-        );
-
+        )
         if (containsFlag(cardPrefix, AMEX)) {
-            cardPrefixes.add(CardPrefix.amex(getContext()));
+            cardPrefixes.add(CardPrefix.amex(getContext()))
         }
         if (containsFlag(cardPrefix, MASTERCARD)) {
-            cardPrefixes.add(CardPrefix.mastercard(getContext()));
+            cardPrefixes.add(CardPrefix.mastercard(getContext()))
         }
         if (containsFlag(cardPrefix, VISA)) {
-            cardPrefixes.add(CardPrefix.visa(getContext()));
+            cardPrefixes.add(CardPrefix.visa(getContext()))
         }
-
-
-        setHintTextAppearance(hintTextAppearance);
-
-
-        initLayout();
-        tempStr = a.getString(R.styleable.BlockEditText_bet_text);
-        if (tempStr != null)
-            setText(tempStr);
-        a.recycle();
-
+        setHintTextAppearance(hintTextAppearance)
+        initLayout()
+        tempStr = a.getString(R.styleable.BlockEditText_bet_text)
+        if (tempStr != null) text = tempStr
+        a.recycle()
     }
 
-    private boolean containsFlag(int flagSet, int flag) {
-        return (flagSet | flag) == flagSet;
+    private fun containsFlag(flagSet: Int, flag: Int): Boolean {
+        return flagSet or flag == flagSet
     }
 
-    private ViewGroup.LayoutParams createWidthMatchParentLayoutParams() {
-        return new LinearLayout.LayoutParams(
+    private fun createWidthMatchParentLayoutParams(): ViewGroup.LayoutParams {
+        return LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-        );
+        )
     }
 
-    private void initLayout() {
-        blockLinearLayout.removeAllViews();
-        int i = 0;
-        String text = getText();
-        for (; i < noOfBlock; i++) {
-
-            final int length = getLength(i);
-            final AEditText editText;
-            if (editTexts.get(i) == null) {
-                editText = new AEditText(getContext());
-                editText.addTextChangedListener(createTextChangeListener(editText, i));
-                editTexts.put(i, editText);
-                editText.setOnFocusChangeListener(new OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean hasFocus) {
-                        if (hintTextView != null)
-                            hintTextView.setHintTextColor(hasFocus ? hintColorFocus : hintColorDefault);
-                    }
-                });
-
-                editText.setSupportTextAppearance(textAppearance);
-                setTextSize(editText, textSize);
-                editText.setOnKeyListener(createKeyListener(editText, i));
-
+    private fun initLayout() {
+        blockLinearLayout!!.removeAllViews()
+        var i = 0
+        var text: String = text.toString()
+        while (i < noOfBlock) {
+            val length = getLength(i)
+            val editText: AEditText?
+            if (editTexts[i] == null) {
+                editText = AEditText(context)
+                editText.addTextChangedListener(createTextChangeListener(editText, i))
+                editTexts.put(i, editText)
+                editText.onFocusChangeListener = OnFocusChangeListener { v, hasFocus -> if (hintTextView != null) hintTextView!!.setHintTextColor(if (hasFocus) hintColorFocus else hintColorDefault) }
+                editText.setSupportTextAppearance(textAppearance)
+                setTextSize(editText, textSize)
+                editText.setOnKeyListener(createKeyListener(editText, i))
             } else {
-                editText = editTexts.get(i);
+                editText = editTexts[i]
             }
-
-            editText.setInputType(inputType);
-            InputFilter[] filters = new InputFilter[1];
-            filters[0] = new LengthFilter(editText, i);
-            editText.setFilters(filters);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    0, LinearLayout.LayoutParams.WRAP_CONTENT, length
-            );
-            editText.setLayoutParams(params);
-            editText.setGravity(Gravity.CENTER);
-            blockLinearLayout.addView(editText);
-            if (editTextBackground != null)
-                setEdiTextBackground(editText, editTextBackground);
-
+            editText!!.inputType = inputType
+            val filters = arrayOfNulls<InputFilter>(1)
+            filters[0] = LengthFilter(editText, i)
+            editText.filters = filters
+            val params = LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, length.toFloat()
+            )
+            editText.layoutParams = params
+            editText.gravity = Gravity.CENTER
+            blockLinearLayout!!.addView(editText)
+            if (editTextBackground != null) setEdiTextBackground(editText, editTextBackground!!)
             if (i + 1 < noOfBlock && separator != null) {
-                ATextView textView = new ATextView(getContext());
-                textView.setText(String.valueOf(separator));
-                LinearLayout.LayoutParams textViewParams = new LinearLayout.LayoutParams(
+                val textView = ATextView(context)
+                textView.text = separator.toString()
+                val textViewParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-                textViewParams.gravity = Gravity.CENTER;
-                textView.setLayoutParams(textViewParams);
-                textView.setPadding(separatorPadding, 0, separatorPadding, 0);
-                textView.setSupportTextAppearance(separatorTextAppearance);
-                if (separatorTextSize > 0)
-                    textView.setTextSize(separatorTextSize);
-                blockLinearLayout.addView(textView);
+                )
+                textViewParams.gravity = Gravity.CENTER
+                textView.layoutParams = textViewParams
+                textView.setPadding(separatorPadding, 0, separatorPadding, 0)
+                textView.setSupportTextAppearance(separatorTextAppearance)
+                if (separatorTextSize > 0) textView.textSize = separatorTextSize
+                blockLinearLayout!!.addView(textView)
             }
-
-            editText.setText(null);
-
-            if (i > 0)
-                editText.setEnabled(false);
-            else
-                editText.setEnabled(isEnabled);
-
-
+            editText.text = null
+            if (i > 0) editText.isEnabled = false else editText.isEnabled = isEnabled
+            i++
         }
-        for (; i < editTexts.size(); ) {
-            editTexts.remove(i);
+        while (i < editTexts.size()) {
+            editTexts.remove(i)
         }
-
-        setText(text);
-        hideOrShowCardIcon();
-
+        this.text = text
+        hideOrShowCardIcon()
     }
 
-    private OnKeyListener createKeyListener(final AEditText editText, final int i) {
-        return new OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_DEL) {
-                    if (editText.getSelectionStart() == 0 && editText.getSelectionEnd() == 0) {
-                        AEditText prevEditText = editTexts.get(i - 1);
-                        if (prevEditText != null) {
-                            prevEditText.requestFocus();
-                            prevEditText.getEditableText().delete(prevEditText.getText().length() - 1, prevEditText.getText().length());
-                            prevEditText.setSelection(prevEditText.getText().length() - 1);
-                            return true;
-
-                        }
+    private fun createKeyListener(editText: AEditText, i: Int): OnKeyListener {
+        return OnKeyListener { _, keyCode, _ ->
+            if (keyCode == KeyEvent.KEYCODE_DEL) {
+                if (editText.selectionStart == 0 && editText.selectionEnd == 0) {
+                    val prevEditText = editTexts[i - 1]
+                    if (prevEditText != null) {
+                        prevEditText.requestFocus()
+                        prevEditText.editableText.delete(prevEditText.text!!.length - 1, prevEditText.text!!.length)
+                        prevEditText.setSelection(prevEditText.text!!.length - 1)
+                        return@OnKeyListener true
                     }
                 }
-                return false;
             }
-        };
-    }
-
-    private void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        if (watcher != null) watcher.beforeTextChanged(s, start, count, after);
-    }
-
-    private void onTextChanged(CharSequence s, int start, int before, int count) {
-        if (watcher != null) watcher.onTextChanged(s, start, before, count);
-
-    }
-
-    private void afterTextChanged(Editable s) {
-        if (watcher != null) watcher.afterTextChanged(s);
-
-    }
-
-    public void setTextChangedListener(TextWatcher watcher) {
-        this.watcher = watcher;
-    }
-
-
-    public void setCustomInsertionActionModeCallback(ActionMode.Callback callback) {
-        this.callback = callback;
-        for (int i = 0; i < editTexts.size(); i++) {
-            AEditText editText = editTexts.get(i);
-            setCustomInsertionActionModeCallback(editText, callback);
+            false
         }
     }
 
-    private void setCustomInsertionActionModeCallback(AEditText editText, ActionMode.Callback callback) {
+    private fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+        if (watcher != null) watcher!!.beforeTextChanged(s, start, count, after)
+    }
+
+    private fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+        if (watcher != null) watcher!!.onTextChanged(s, start, before, count)
+    }
+
+    private fun afterTextChanged(s: Editable) {
+        if (watcher != null) watcher!!.afterTextChanged(s)
+    }
+
+    fun setTextChangedListener(watcher: TextWatcher?) {
+        this.watcher = watcher
+    }
+
+    fun setCustomInsertionActionModeCallback(callback: ActionMode.Callback?) {
+        this.callback = callback
+        for (i in 0 until editTexts.size()) {
+            val editText = editTexts[i]
+            setCustomInsertionActionModeCallback(editText, callback)
+        }
+    }
+
+    private fun setCustomInsertionActionModeCallback(editText: AEditText?, callback: ActionMode.Callback?) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            editText.setCustomInsertionActionModeCallback(callback);
-        } else
-            editText.setCustomSelectionActionModeCallback(callback);
+            editText!!.customInsertionActionModeCallback = callback
+        } else editText!!.customSelectionActionModeCallback = callback
     }
 
-    public void setSeparatorCharacter(Character separator) {
-        this.separator = separator;
-        initLayout();
+    fun setSeparatorCharacter(separator: Char?) {
+        this.separator = separator
+        initLayout()
     }
 
-    public void setText(CharSequence sequence) {
-        int i = 0;
-        for (; i < editTexts.size(); i++) {
-            AEditText editText = editTexts.get(i);
-            editText.setText(null);
-        }
-        if (sequence != null) {
-            String text = String.valueOf(sequence);
-            AEditText editText = editTexts.get(0);
-            editText.getEditableText().insert(0, text);
-
-        }
-
-
-    }
-
-    public String getText() {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < editTexts.size(); i++) {
-
-            AEditText editText = editTexts.get(i);
-            builder.append(editText.getText());
-
-        }
-
-        return builder.toString();
-    }
-
-
-    public int getMaxLength() {
-        int length = 0;
-        for (int i = 0; i < editTexts.size(); i++) {
-            length += getLength(i);
-
-        }
-
-        return length;
-    }
-
-    private int getLength(int i) {
-        return lengthUsed.get(i, defaultLength);
-    }
-
-    public void setTextSize(float textSize) {
-        this.textSize = textSize;
-        for (int i = 0; i < editTexts.size(); i++) {
-            AEditText editText = editTexts.get(i);
-            setTextSize(editText, textSize);
-        }
-    }
-
-    private void setTextSize(AEditText editText, float textSize) {
-        if (textSize > 0)
-            editText.setTextSize(textSize);
-    }
-
-    public void setTextAppearance(int textAppearance) {
-        this.textAppearance = textAppearance;
-        for (int i = 0; i < editTexts.size(); i++) {
-            AEditText editText = editTexts.get(i);
-            editText.setSupportTextAppearance(textAppearance);
-        }
-    }
-
-    public void setInputType(int type) {
-        inputType = type;
-        for (int i = 0; i < editTexts.size(); i++) {
-            AEditText editText = editTexts.get(i);
-            editText.setInputType(type);
-        }
-    }
-
-    public void setNumberOfBlock(int block) {
-        this.noOfBlock = block;
-        initLayout();
-    }
-
-    public void setDefaultLength(int defaultLength) {
-        this.defaultLength = defaultLength;
-        initLayout();
-    }
-
-    public void setEdiTextBackground(Drawable drawable) {
-        for (int i = 0; i < editTexts.size(); i++) {
-            AEditText editText = editTexts.get(i);
-
-            setEdiTextBackground(editText, drawable);
-        }
-    }
-
-    private void setEdiTextBackground(AEditText editText, Drawable drawable) {
-        ViewCompat.setBackground(editText, drawable.getConstantState().newDrawable());
-    }
-
-    public void setLengthAt(int index, int length) {
-        lengths.put(index, length);
-        initLayout();
-    }
-
-    public void setHint(String hint) {
-        if (hintTextView == null) {
-            hintTextView = new ATextView(getContext());
-            hintTextView.setPadding(16, 0, 16, 0);
-            setHintTextAppearance(hintTextAppearance);
-            setHintTextSize(hintTextAppearance);
-            linearLayout.addView(hintTextView, 0);
-            hintColorDefault = hintTextView.getHintTextColors();
-            hintColorFocus = ContextCompat.getColorStateList(
-                    getContext(),
-                    R.color.colorAccent
-            );
-
-
-        }
-        hintTextView.setVisibility(hint == null ? GONE : VISIBLE);
-        hintTextView.setHint(hint);
-
-
-    }
-
-    public void setHintTextSize(float textSize) {
-        this.hintTextSize = textSize;
-        if (hintTextView != null && textSize > 0) {
-            hintTextView.setTextSize(textSize);
-        }
-    }
-
-    public void setHintTextAppearance(int textAppearance) {
-        this.hintTextAppearance = textAppearance;
-        if (hintTextView != null) {
-            hintTextView.setSupportTextAppearance(textAppearance);
-        }
-    }
-
-
-    public void setSeparatorTextAppearance(int textAppearance) {
-        this.separatorTextAppearance = textAppearance;
-        initLayout();
-    }
-
-    public void setSeparatorPadding(int padding) {
-        this.separatorPadding = padding;
-        initLayout();
-    }
-
-    public void setSeparatorTextSize(float textSize) {
-        this.separatorTextSize = textSize;
-        initLayout();
-    }
-
-    public void setSelection(int selection) {
-        for (int i = 0; i < editTexts.size(); i++) {
-            int length = getLength(i);
-            if (selection < length) {
-                AEditText editText = editTexts.get(i);
-                editText.requestFocus();
-                editText.setSelection(selection);
-
-                break;
+    var text: CharSequence?
+        get() {
+            val builder = StringBuilder()
+            for (i in 0 until editTexts.size()) {
+                val editText = editTexts[i]
+                builder.append(editText!!.text)
             }
-            selection -= length;
+            return builder.toString()
+        }
+        set(sequence) {
+            var i = 0
+            while (i < editTexts.size()) {
+                val editText = editTexts[i]
+                editText?.setText("")
+                i++
+            }
+            if (sequence != null) {
+                val text = sequence.toString()
+                val editText = editTexts[0]
+                editText!!.editableText.insert(0, text)
+            }
+        }
+    val maxLength: Int
+        get() {
+            var length = 0
+            for (i in 0 until editTexts.size()) {
+                length += getLength(i)
+            }
+            return length
+        }
+
+    private fun getLength(i: Int): Int {
+        return lengthUsed!![i, defaultLength]
+    }
+
+    fun setTextSize(textSize: Float) {
+        this.textSize = textSize
+        for (i in 0 until editTexts.size()) {
+            val editText = editTexts[i]
+            setTextSize(editText, textSize)
         }
     }
 
-    public void addCardPrefix(CardPrefix cardPrefix) {
-        cardPrefixes.add(cardPrefix);
-        hideOrShowCardIcon();
+    private fun setTextSize(editText: AEditText?, textSize: Float) {
+        if (textSize > 0) editText!!.textSize = textSize
     }
 
-
-    public void addCardPrefix(int index, CardPrefix cardPrefix) {
-        cardPrefixes.add(index, cardPrefix);
-        hideOrShowCardIcon();
+    fun setTextAppearance(textAppearance: Int) {
+        this.textAppearance = textAppearance
+        for (i in 0 until editTexts.size()) {
+            val editText = editTexts[i]
+            editText!!.setSupportTextAppearance(textAppearance)
+        }
     }
 
-    public boolean removeCardPrefix(CardPrefix cardPrefix) {
-        boolean b = cardPrefixes.remove(cardPrefix);
-        hideOrShowCardIcon();
-        return b;
+    fun setInputType(type: Int) {
+        inputType = type
+        for (i in 0 until editTexts.size()) {
+            val editText = editTexts[i]
+            editText!!.inputType = type
+        }
     }
 
-    public CardPrefix removeCardPrefix(int index) {
-        CardPrefix cardPrefix = cardPrefixes.remove(index);
-        hideOrShowCardIcon();
-        return cardPrefix;
+    fun setNumberOfBlock(block: Int) {
+        noOfBlock = block
+        initLayout()
     }
 
-    public void setCardIconSize(int size) {
-        cardIconSize = size;
+    fun setDefaultLength(defaultLength: Int) {
+        this.defaultLength = defaultLength
+        initLayout()
+    }
+
+    fun setEdiTextBackground(drawable: Drawable) {
+        for (i in 0 until editTexts.size()) {
+            val editText = editTexts[i]
+            setEdiTextBackground(editText, drawable)
+        }
+    }
+
+    private fun setEdiTextBackground(editText: AEditText?, drawable: Drawable) {
+        ViewCompat.setBackground(editText!!, drawable.constantState?.newDrawable())
+    }
+
+    fun setLengthAt(index: Int, length: Int) {
+        lengths.put(index, length)
+        initLayout()
+    }
+
+    fun setHint(hint: String?) {
+        if (hintTextView == null) {
+            hintTextView = ATextView(context)
+            hintTextView!!.setPadding(16, 0, 16, 0)
+            setHintTextAppearance(hintTextAppearance)
+            setHintTextSize(hintTextAppearance.toFloat())
+            linearLayout!!.addView(hintTextView, 0)
+            hintColorDefault = hintTextView!!.hintTextColors
+            hintColorFocus = ContextCompat.getColorStateList(
+                    context,
+                    R.color.colorAccent
+            )
+        }
+        hintTextView!!.visibility = if (hint == null) GONE else VISIBLE
+        hintTextView!!.hint = hint
+    }
+
+    fun setHintTextSize(textSize: Float) {
+        hintTextSize = textSize
+        if (hintTextView != null && textSize > 0) {
+            hintTextView!!.textSize = textSize
+        }
+    }
+
+    fun setHintTextAppearance(textAppearance: Int) {
+        hintTextAppearance = textAppearance
+        if (hintTextView != null) {
+            hintTextView!!.setSupportTextAppearance(textAppearance)
+        }
+    }
+
+    fun setSeparatorTextAppearance(textAppearance: Int) {
+        separatorTextAppearance = textAppearance
+        initLayout()
+    }
+
+    fun setSeparatorPadding(padding: Int) {
+        separatorPadding = padding
+        initLayout()
+    }
+
+    fun setSeparatorTextSize(textSize: Float) {
+        separatorTextSize = textSize
+        initLayout()
+    }
+
+    fun setSelection(selection: Int) {
+        var nextSelection = selection
+        for (i in 0 until editTexts.size()) {
+            val length = getLength(i)
+            if (nextSelection < length) {
+                val editText = editTexts[i]
+                editText!!.requestFocus()
+                editText.setSelection(nextSelection)
+                break
+            }
+            nextSelection -= length
+        }
+    }
+
+    fun addCardPrefix(cardPrefix: CardPrefix) {
+        cardPrefixes.add(cardPrefix)
+        hideOrShowCardIcon()
+    }
+
+    fun addCardPrefix(index: Int, cardPrefix: CardPrefix) {
+        cardPrefixes.add(index, cardPrefix)
+        hideOrShowCardIcon()
+    }
+
+    fun removeCardPrefix(cardPrefix: CardPrefix): Boolean {
+        val b = cardPrefixes.remove(cardPrefix)
+        hideOrShowCardIcon()
+        return b
+    }
+
+    fun removeCardPrefix(index: Int): CardPrefix {
+        val cardPrefix = cardPrefixes.removeAt(index)
+        hideOrShowCardIcon()
+        return cardPrefix
+    }
+
+    fun setCardIconSize(size: Int) {
+        cardIconSize = size
         if (iconImageView != null) {
-            iconImageView.getLayoutParams().width = size;
-            iconImageView.requestLayout();
+            iconImageView!!.layoutParams.width = size
+            iconImageView!!.requestLayout()
         }
     }
 
-    public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
-        for (int i = 0; i < editTexts.size(); i++) {
-            AEditText editText = editTexts.get(i);
-            editText.setEnabled(isEnabled);
+    override fun setEnabled(isEnabled: Boolean) {
+        this.isEnabled = isEnabled
+        for (i in 0 until editTexts.size()) {
+            val editText = editTexts[i]
+            editText!!.isEnabled = isEnabled
         }
     }
 
-    public void setShowCardIcon(boolean isShowCardIcon){
-        this.isShowCardIcon = isShowCardIcon;
-        hideOrShowCardIcon();
+    fun setShowCardIcon(isShowCardIcon: Boolean) {
+        this.isShowCardIcon = isShowCardIcon
+        hideOrShowCardIcon()
     }
 
-    public boolean isEnabled() {
-        return isEnabled;
+    override fun isEnabled(): Boolean {
+        return isEnabled
     }
 
-    private void hideOrShowCardIcon() {
-        if (isShowCardIcon && cardPrefixes.size() > 0) {
+    private fun hideOrShowCardIcon() {
+        if (isShowCardIcon && cardPrefixes.size > 0) {
             if (iconImageView == null) {
-                iconImageView = new ImageView(getContext());
-                iconImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                iconImageView.setAdjustViewBounds(true);
-                ViewGroup.LayoutParams params = new LayoutParams(
+                iconImageView = ImageView(context)
+                iconImageView!!.scaleType = ImageView.ScaleType.FIT_CENTER
+                iconImageView!!.adjustViewBounds = true
+                val params: ViewGroup.LayoutParams = LayoutParams(
                         cardIconSize,
                         ViewGroup.LayoutParams.MATCH_PARENT
-                );
-                iconImageView.setLayoutParams(params);
-                blockLinearLayout.addView(iconImageView);
-                updateCardIcon();
-            } else if (iconImageView.getParent() == null) {
-                blockLinearLayout.addView(iconImageView);
+                )
+                iconImageView!!.layoutParams = params
+                blockLinearLayout!!.addView(iconImageView)
+                updateCardIcon()
+            } else if (iconImageView!!.parent == null) {
+                blockLinearLayout!!.addView(iconImageView)
             }
-            iconImageView.setVisibility(VISIBLE);
-
+            iconImageView!!.visibility = VISIBLE
         } else if (iconImageView != null) {
-            iconImageView.setVisibility(GONE);
+            iconImageView!!.visibility = GONE
         }
-
-
     }
 
-
-    private void updateCardIcon() {
-
-        if (cardPrefixes.size() > 0) {
-            String text = getText();
-            for (CardPrefix cardPrefix : cardPrefixes) {
-                for (String prefix : cardPrefix.getPrefixes())
-                    if (text.startsWith(prefix)) {
-                        iconImageView.setImageDrawable(cardPrefix.getIcon());
-                        if (cardPrefix.getLengths().size() > 0) {
-                            lengthUsed = cardPrefix.getLengths();
-                            updateEditTextLength();
-                        }
-                        if (cardPrefixListener != null)
-                            cardPrefixListener.onCardUpdate(cardPrefix);
-
-                        return;
+    private fun updateCardIcon() {
+        if (cardPrefixes.size > 0) {
+            val text: String = text.toString()
+            for (cardPrefix in cardPrefixes) {
+                for (prefix in cardPrefix.prefixes) if (text.startsWith(prefix)) {
+                    iconImageView!!.setImageDrawable(cardPrefix.icon)
+                    if (cardPrefix.lengths.size() > 0) {
+                        lengthUsed = cardPrefix.lengths
+                        updateEditTextLength()
                     }
+                    if (cardPrefixListener != null) cardPrefixListener!!.onCardUpdate(cardPrefix)
+                    return
+                }
             }
-            lengthUsed = lengths;
+            lengthUsed = lengths
             if (iconImageView != null) {
-                iconImageView.setImageDrawable(null);
-                updateEditTextLength();
+                iconImageView!!.setImageDrawable(null)
+                updateEditTextLength()
             }
-
-            if (cardPrefixListener != null)
-                cardPrefixListener.onCardUpdate(null);
-
-
-        }
-
-    }
-
-    private void updateEditTextLength() {
-        for (int i = 0; i < editTexts.size(); i++) {
-            AEditText editText = editTexts.get(i);
-            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) editText.getLayoutParams();
-            params.weight = getLength(i);
-            editText.requestLayout();
+            if (cardPrefixListener != null) cardPrefixListener!!.onCardUpdate(null)
         }
     }
 
-    public void setOnCardPrefixListener(OnCardPrefixListener listener) {
-        this.cardPrefixListener = listener;
+    private fun updateEditTextLength() {
+        for (i in 0 until editTexts.size()) {
+            val editText = editTexts[i]
+            val params = editText!!.layoutParams as LinearLayout.LayoutParams
+            params.weight = getLength(i).toFloat()
+            editText.requestLayout()
+        }
     }
 
-    private ActionMode.Callback createActionModeCallback(AEditText editText) {
-        return new ActionMode.Callback() {
-            @Override
-            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-                return true;
-            }
-
-            @Override
-            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                return false;
-            }
-
-            @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-
-                return false;
-            }
-
-            @Override
-            public void onDestroyActionMode(ActionMode mode) {
-
-            }
-        };
+    fun setOnCardPrefixListener(listener: OnCardPrefixListener?) {
+        cardPrefixListener = listener
     }
 
-    private TextWatcher createTextChangeListener(final AEditText editText, final int index) {
-        return new TextWatcher() {
-            public CharSequence sequence="";
-            public CharSequence beforSequence="";
-            int prevLength = 0;
-            int selection = 0;
+    private fun createActionModeCallback(editText: AEditText): ActionMode.Callback {
+        return object : ActionMode.Callback {
+            override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
+                return true
+            }
 
-            int start, before;
+            override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
+                return false
+            }
 
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                prevLength = s.length();
-                selection = editText.getSelectionStart();
-                beforSequence = sequence;
-                for (int i = 0; i < index; i++) {
-                    start+=getLength(i);
+            override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+                return false
+            }
+
+            override fun onDestroyActionMode(mode: ActionMode) {}
+        }
+    }
+
+    private fun createTextChangeListener(editText: AEditText, index: Int): TextWatcher {
+        return object : TextWatcher {
+            var sequence: CharSequence = ""
+            var beforSequence: CharSequence = ""
+            var prevLength = 0
+            var selection = 0
+            var start = 0
+            var before = 0
+            override fun beforeTextChanged(s: CharSequence, startSeq: Int, count: Int, after: Int) {
+                var start = startSeq
+                prevLength = s.length
+                selection = editText.selectionStart
+                beforSequence = sequence
+                for (i in 0 until index) {
+                    start += getLength(i)
                 }
-                this.start = start;
-                this.before  = beforSequence.length();
-                BlockEditText.this.beforeTextChanged(beforSequence,  this.start, this.before, this.before+(after-count));
+                this.start = start
+                before = beforSequence.length
+                this@BlockEditText.beforeTextChanged(beforSequence, this.start, before, before + (after - count))
             }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                EditText nextView = editTexts.get(index + 1);
-                EditText prevView = editTexts.get(index - 1);
-                if (s.length() > prevLength && editText.isFocused() && editText.getSelectionStart() == getLength(index))
-                    if (s.length() == getLength(index) && nextView != null && nextView.getText().length() == 0)
-                        nextView.requestFocus();
-                    else if (s.length() == 0 && prevView != null)
-                        prevView.requestFocus();
-
-                if (s.length() < getLength(index)) {
-                    if (editText.getSelectionStart() == 0 && editText.isFocused() && prevView != null) {
-                        prevView.requestFocus();
-                        prevView.setSelection(prevView.getText().length());
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                val nextView: EditText? = editTexts[index + 1]
+                val prevView: EditText? = editTexts[index - 1]
+                if (s.length > prevLength && editText.isFocused && editText.selectionStart == getLength(index))
+                    if (s.length == getLength(index) && nextView != null && nextView.text.isEmpty()) nextView.requestFocus()
+                    else if (s.isEmpty() && prevView != null) prevView.requestFocus()
+                if (s.length < getLength(index)) {
+                    if (editText.selectionStart == 0 && editText.isFocused && prevView != null) {
+                        prevView.requestFocus()
+                        prevView.setSelection(prevView.text.length)
                     }
-                    if (nextView != null && !nextView.getText().toString().isEmpty()) {
-                        int length = getLength(index) - s.length();
-                        length = length > nextView.getText().length() ? nextView.getText().length() : length;
-                        Editable editable = nextView.getText();
-                        String temp = editable.toString().substring(0, length);
-                        editable = editable.delete(0, length);
-                        editText.append(temp);
-                        editText.setSelection(selection);
-                        nextView.setText(editable);
+                    if (nextView != null && !nextView.text.toString().isEmpty()) {
+                        var length = getLength(index) - s.length
+                        length = if (length > nextView.text.length) nextView.text.length else length
+                        var editable = nextView.text
+                        val temp = editable.toString().substring(0, length)
+                        editable = editable.delete(0, length)
+                        editText.append(temp)
+                        editText.setSelection(selection)
+                        nextView.text = editable
                     }
                 }
-                sequence = getText();
-                BlockEditText.this.onTextChanged(sequence, this.start, this.before, sequence.length());
-
-
+                sequence = text!!
+                this@BlockEditText.onTextChanged(sequence, this.start, this.before, sequence.length)
             }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                EditText nextView = editTexts.get(index + 1);
-
-                if (nextView != null)
-                    nextView.setEnabled(isEnabled && s.length() >= getLength(index));
-                updateCardIcon();
-                BlockEditText.this.afterTextChanged(s);
+            override fun afterTextChanged(s: Editable) {
+                val nextView: EditText? = editTexts[index + 1]
+                if (nextView != null) nextView.isEnabled = isEnabled && s.length >= getLength(index)
+                updateCardIcon()
+                this@BlockEditText.afterTextChanged(s)
             }
-        };
+        }
     }
 
-    public class LengthFilter implements InputFilter {
-        private final int index;
-        private final AEditText editText;
-
-        public LengthFilter(AEditText editText, int index) {
-            this.index = index;
-            this.editText = editText;
-        }
-
-        public CharSequence filter(CharSequence source, int start, int end, Spanned dest,
-                                   int dstart, int dend) {
-            if (editText.getInputType() == InputType.TYPE_CLASS_NUMBER) {
-                source = String.valueOf(source).replaceAll("[\\D]", "");
+    inner class LengthFilter(private val editText: AEditText, private val index: Int) : InputFilter {
+        override fun filter(seq: CharSequence, start: Int, end: Int, dest: Spanned,
+                            dstart: Int, dend: Int): CharSequence? {
+            var source = seq
+            source = if (editText.inputType == InputType.TYPE_CLASS_NUMBER) {
+                source.toString().replace("[\\D]".toRegex(), "")
             } else {
-                source = String.valueOf(source).replaceAll("[\\W]", "");
+                source.toString().replace("[\\W]".toRegex(), "")
             }
-            int mMax = getLength(index);
-
-
-            int keep = mMax - (dest.length() - (dend - dstart));
-
-            EditText nextView = editTexts.get(index + 1);
-
-            if (source.length() == 0)
-                return null;
-            if (keep <= 0) {
-                if (nextView != null && getText().length() < getMaxLength()) {
-                    String s = source.toString();
-                    String temp = editText.getText().toString();
-
-                    int selection = editText.getSelectionStart();
-                    temp = temp.substring(0, selection) + source + temp.substring(selection);
-                    editText.setText(temp.substring(0, mMax));
-
-                    temp = temp.substring(mMax);
-                    if (selection + source.length() <= mMax)
-                        editText.setSelection(selection + source.length());
-                    else {
-                        nextView.requestFocus();
-                        nextView.setSelection(0);
-
-                    }
-                    if (temp.length() > 0) {
-                        nextView.getEditableText().insert(0, temp);
-                        int nextLength = getLength(index + 1);
-                        nextView.setSelection(temp.length() < nextLength ? temp.length() : nextLength);
-                    } else
-                        nextView.setSelection(0);
-
-                }
-                return "";
-            } else if (keep >= end - start) {
-                return null; // keep original
-            } else {
-                if (source.length() > keep)
-                    if (nextView != null && getText().length() < getMaxLength()) {
-                        String s = source.toString();
-                        String temp = editText.getText().toString();
-                        int selection = editText.getSelectionStart();
-                        temp = temp.substring(0, selection) + source + temp.substring(selection);
-                        editText.setText(temp.substring(0, mMax));
-
-                        temp = temp.substring(mMax);
-                        if (selection + source.length() <= mMax)
-                            editText.setSelection(selection + source.length());
-                        else {
-                            nextView.requestFocus();
-                            nextView.setSelection(0);
-
+            val mMax = getLength(index)
+            var keep = mMax - (dest.length - (dend - dstart))
+            val nextView: EditText? = editTexts[index + 1]
+            if (source.isEmpty()) return null
+            return when {
+                keep <= 0 -> {
+                    if (nextView != null && text!!.length < maxLength) {
+                        var temp = editText.text.toString()
+                        val selection = editText.selectionStart
+                        temp = temp.substring(0, selection) + source + temp.substring(selection)
+                        editText.setText(temp.substring(0, mMax))
+                        temp = temp.substring(mMax)
+                        if (selection + source.length <= mMax) editText.setSelection(selection + source.length) else {
+                            nextView.requestFocus()
+                            nextView.setSelection(0)
                         }
-                        if (temp.length() > 0) {
-                            nextView.getEditableText().insert(0, temp);
-                            int nextLength = getLength(index + 1);
-                            nextView.setSelection(temp.length() < nextLength ? temp.length() : nextLength);
-                        } else
-                            nextView.setSelection(0);
-                        return "";
+                        if (temp.isNotEmpty()) {
+                            nextView.editableText.insert(0, temp)
+                            val nextLength = getLength(index + 1)
+                            nextView.setSelection(if (temp.length < nextLength) temp.length else nextLength)
+                        } else nextView.setSelection(0)
                     }
-
-                keep += start;
-                if (Character.isHighSurrogate(source.charAt(keep - 1))) {
-                    --keep;
-                    if (keep == start) {
-                        return "";
-                    }
+                    ""
                 }
-
-
-                return source.subSequence(start, keep);
+                keep >= end - start -> {
+                    null // keep original
+                }
+                else -> {
+                    if (source.length > keep) if (nextView != null && text!!.length < maxLength) {
+                        var temp = editText.text.toString()
+                        val selection = editText.selectionStart
+                        temp = temp.substring(0, selection) + source + temp.substring(selection)
+                        editText.setText(temp.substring(0, mMax))
+                        temp = temp.substring(mMax)
+                        if (selection + source.length <= mMax) editText.setSelection(selection + source.length) else {
+                            nextView.requestFocus()
+                            nextView.setSelection(0)
+                        }
+                        if (temp.isNotEmpty()) {
+                            nextView.editableText.insert(0, temp)
+                            val nextLength = getLength(index + 1)
+                            nextView.setSelection(if (temp.length < nextLength) temp.length else nextLength)
+                        } else nextView.setSelection(0)
+                        return ""
+                    }
+                    keep += start
+                    if (Character.isHighSurrogate(source[keep - 1])) {
+                        --keep
+                        if (keep == start) {
+                            return ""
+                        }
+                    }
+                    source.subSequence(start, keep)
+                }
             }
         }
-
     }
 
-    public interface OnCardPrefixListener {
-
-        void onCardUpdate(CardPrefix cardPrefix);
-
+    interface OnCardPrefixListener {
+        fun onCardUpdate(cardPrefix: CardPrefix?)
     }
 
+    companion object {
+        private const val AMEX = 1
+        private const val MASTERCARD = 2
+        private const val VISA = 3
+    }
 }
