@@ -376,7 +376,7 @@ class BlockEditText : FrameLayout {
         initLayout()
     }
 
-    fun setEdiTextBackground(drawable: Drawable) {
+    fun setEdiTextBackground(drawable: Drawable?) {
         for (i in 0 until editTexts.size()) {
             val editText = editTexts[i]
             setEdiTextBackground(editText, drawable)

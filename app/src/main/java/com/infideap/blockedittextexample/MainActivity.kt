@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         amexEditText.setHint("Amex")
         amexEditText.setSeparatorCharacter('-')
         amexEditText.setInputType(InputType.TYPE_CLASS_NUMBER)
-        amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this, com.infideap.blockedittext.R.drawable.selector_edittext_round_border_line))
+        amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this, R.drawable.selector_edittext_round_border_line))
         amexEditText.setTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {

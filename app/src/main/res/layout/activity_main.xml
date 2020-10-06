@@ -2,14 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    <data>
-        <variable
-            name="numberOfBlock_id"
-            type="Integer" />
-        <variable
-            name="id_number"
-            type="String" />
-    </data>
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -36,6 +29,13 @@
             <Space
                 android:layout_width="wrap_content"
                 android:layout_height="16dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
+                android:background="#aaa" />
 
             <com.infideap.blockedittext.BlockEditText
                 android:id="@+id/blockEditText_amex"
@@ -77,6 +77,7 @@
                 app:numberOfBlock="4"
                 app:textSize="18sp" />
 
+
             <com.infideap.blockedittext.BlockEditText
                 android:id="@+id/blockEditText_ic_number"
                 android:layout_width="match_parent"
@@ -89,30 +90,31 @@
                 app:numberOfBlock="@{numberOfBlock_id, default=4}"
                 app:text="@{id_number}" />
 
+            <com.infideap.blockedittext.BlockEditText
+                android:id="@+id/blockEditText_unshift_position"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:bet_cardIconSize="48dp"
+                app:bet_cardPrefix="Mastercard|Visa"
+                app:bet_defaultLength="4"
+                app:bet_editTextBackground="@drawable/selector_edittext_round_border"
+                app:bet_hint="Unshift Block"
+                app:bet_inputType="Integer"
+                app:bet_numberOfBlock="4"
+                app:bet_shiftPosition="false" />
         </LinearLayout>
 
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:layout_marginTop="16dp"
-            android:background="#aaa"
-            android:layout_marginBottom="8dp" />
-
-        <com.infideap.blockedittext.BlockEditText
-            android:id="@+id/blockEditText_unshift_position"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:bet_cardIconSize="48dp"
-            app:bet_cardPrefix="Mastercard|Visa"
-            app:bet_defaultLength="4"
-            app:bet_shiftPosition="false"
-            app:bet_editTextBackground="@drawable/selector_edittext_round_border"
-            app:bet_hint="Unshift Block"
-            app:bet_inputType="Integer"
-            app:bet_numberOfBlock="4" />
-    </LinearLayout>
-
-
     </androidx.core.widget.NestedScrollView>
+
+    <data>
+
+        <variable
+            name="numberOfBlock_id"
+            type="Integer" />
+
+        <variable
+            name="id_number"
+            type="String" />
+    </data>
 </layout>

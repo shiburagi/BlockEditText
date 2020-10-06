@@ -16,23 +16,8 @@
         <attr name="separatorTextAppearance" format="reference" />
         <attr name="editTextBackground" format="reference" />
         <attr name="showCardIcon" format="boolean" />
-        <attr name="bet_numberOfBlock" format="integer" />
-        <attr name="bet_defaultLength" format="integer" />
-        <attr name="bet_separatorPadding" format="dimension" />
-        <attr name="bet_textSize" format="dimension" />
-        <attr name="bet_hintTextSize" format="dimension" />
-        <attr name="bet_separatorTextSize" format="dimension" />
-        <attr name="bet_cardIconSize" format="dimension" />
-        <attr name="bet_hint" format="string" />
-        <attr name="bet_text" format="string" />
-        <attr name="bet_separatorCharacter" format="string" />
-        <attr name="bet_textAppearance" format="reference" />
-        <attr name="bet_hintTextAppearance" format="reference" />
-        <attr name="bet_separatorTextAppearance" format="reference" />
-        <attr name="bet_editTextBackground" format="reference" />
-        <attr name="bet_showCardIcon" format="boolean" />
-        <attr name="bet_shiftPosition" format="boolean" />
-        <attr name="bet_style" format="reference" />
+        <attr name="shiftPosition" format="boolean" />
+        <attr name="style" format="reference" />
 
         <attr name="inputType" format="enum">
             <enum name="Text" value="1" />
