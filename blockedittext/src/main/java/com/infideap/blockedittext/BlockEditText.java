@@ -5,11 +5,6 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -38,6 +33,12 @@ import com.app.infideap.stylishwidget.view.ATextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+
 public class BlockEditText extends FrameLayout {
     private static final int AMEX = 1;
     private static final int MASTERCARD = 2;
@@ -55,13 +56,13 @@ public class BlockEditText extends FrameLayout {
     private ActionMode.Callback callback;
     private SparseArray<AEditText> editTexts = new SparseArray<>();
     private Character separator;
-    private int separatorTextAppearance = android.support.v7.appcompat.R.style.Base_TextAppearance_AppCompat_Medium;
+    private int separatorTextAppearance = androidx.appcompat.R.style.Base_TextAppearance_AppCompat_Medium;
     private int separatorPadding = 16;
     private float separatorTextSize;
     private float textSize;
     private float hintTextSize;
-    private int textAppearance = android.support.v7.appcompat.R.style.Base_TextAppearance_AppCompat_Medium;
-    private int hintTextAppearance = android.support.v7.appcompat.R.style.Base_TextAppearance_AppCompat_Medium;
+    private int textAppearance = androidx.appcompat.R.style.Base_TextAppearance_AppCompat_Medium;
+    private int hintTextAppearance = androidx.appcompat.R.style.Base_TextAppearance_AppCompat_Medium;
     private Drawable editTextBackground;
     private String hint;
     private ColorStateList hintColorDefault;
