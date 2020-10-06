@@ -54,14 +54,14 @@ you can include it by **download this project** and **import /blockedittext** as
 ```xml
 <com.infideap.blockedittext.BlockEditText
     android:id="@+id/blockEditText_tac"
-    app:bet_defaultLength="1"
-    app:bet_numberOfBlock="4"
-    app:bet_inputType="Integer"
-    app:bet_hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
-    app:bet_hint="TAC"
-    app:bet_textSize="24sp"
+    app:defaultLength="1"
+    app:numberOfBlock="4"
+    app:inputType="Integer"
+    app:hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
+    app:hint="TAC"
+    app:textSize="24sp"
     android:layout_width="300dp"
-    app:bet_editTextBackground="@drawable/selector_edittext_round_border"
+    app:editTextBackground="@drawable/selector_edittext_round_border"
     android:layout_height="wrap_content" />
 
 ```
@@ -72,12 +72,12 @@ you can include it by **download this project** and **import /blockedittext** as
     android:id="@+id/blockEditText_visa"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:bet_defaultLength="4"
-    app:bet_hint="Visa/Mastercard"
-    app:bet_hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
-    app:bet_inputType="Integer"
-    app:bet_numberOfBlock="4"
-    app:bet_text="131321323-13213-21321312" />
+    app:defaultLength="4"
+    app:hint="Visa/Mastercard"
+    app:hintTextAppearance="@style/TextAppearance.AppCompat.Medium"
+    app:inputType="Integer"
+    app:numberOfBlock="4"
+    app:text="131321323-13213-21321312" />
 ```
 
 
