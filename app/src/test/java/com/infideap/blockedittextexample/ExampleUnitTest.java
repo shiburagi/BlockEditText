@@ -1,4 +1,4 @@
-package com.infideap.blockedittext;
+package com.infideap.blockedittextexample;
 
 import org.junit.Test;
 

@@ -1,12 +1,16 @@
-package com.infideap.blockedittext;
+package com.infideap.blockedittextexample;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+
+import com.infideap.blockedittext.BlockEditText;
+import com.infideap.blockedittext.CardPrefix;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         amexEditText.setHint("Amex");
         amexEditText.setSeparatorCharacter('-');
         amexEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
-        amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this, R.drawable.selector_edittext_round_border_line));
+        amexEditText.setEdiTextBackground(ContextCompat.getDrawable(this,  com.infideap.blockedittext.R.drawable.selector_edittext_round_border_line));
 
         amexEditText.setTextChangedListener(new TextWatcher() {
             @Override
