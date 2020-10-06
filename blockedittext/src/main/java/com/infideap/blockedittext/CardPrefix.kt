@@ -6,11 +6,11 @@ import android.util.SparseIntArray
 import androidx.core.content.ContextCompat
 
 class CardPrefix(icon: Drawable?, vararg prefix: String) {
-    val prefixes: Array<String>
-    val icon: Drawable?
+    val prefixes: Array<out String> = prefix
+    val icon: Drawable? = icon
     val lengths = SparseIntArray()
 
-    constructor(context: Context?, iconRes: Int, vararg prefix: String?) : this(ContextCompat.getDrawable(context!!, iconRes), *prefix) {}
+    constructor(context: Context?, iconRes: Int, vararg prefix: String) : this(ContextCompat.getDrawable(context!!, iconRes), *prefix) {}
 
     fun lengthAt(index: Int, length: Int) {
         lengths.put(index, length)
@@ -54,8 +54,4 @@ class CardPrefix(icon: Drawable?, vararg prefix: String) {
         }
     }
 
-    init {
-        prefixes = prefix
-        this.icon = icon
-    }
 }

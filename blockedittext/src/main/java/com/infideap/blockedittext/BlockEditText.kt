@@ -21,7 +21,6 @@ import androidx.core.view.ViewCompat
 import com.app.infideap.stylishwidget.util.Utils
 import com.app.infideap.stylishwidget.view.AEditText
 import com.app.infideap.stylishwidget.view.ATextView
-import com.infideap.blockedittext.CardPrefix
 import java.util.*
 
 class BlockEditText : FrameLayout {
@@ -148,13 +147,13 @@ class BlockEditText : FrameLayout {
                 0
         )
         if (containsFlag(cardPrefix, AMEX)) {
-            cardPrefixes.add(CardPrefix.Companion.amex(getContext()))
+            cardPrefixes.add(CardPrefix.amex(getContext()))
         }
         if (containsFlag(cardPrefix, MASTERCARD)) {
-            cardPrefixes.add(CardPrefix.Companion.mastercard(getContext()))
+            cardPrefixes.add(CardPrefix.mastercard(getContext()))
         }
         if (containsFlag(cardPrefix, VISA)) {
-            cardPrefixes.add(CardPrefix.Companion.visa(getContext()))
+            cardPrefixes.add(CardPrefix.visa(getContext()))
         }
         setHintTextAppearance(hintTextAppearance)
         shiftPosition = a.getBoolean(
@@ -180,7 +179,7 @@ class BlockEditText : FrameLayout {
     private fun initLayout() {
         blockLinearLayout!!.removeAllViews()
         var i = 0
-        var text: String = text
+        var text: String = text.toString()
         while (i < noOfBlock) {
             val length = getLength(i)
             val editText: AEditText?
@@ -192,7 +191,11 @@ class BlockEditText : FrameLayout {
                 }
                 editText.addTextChangedListener(createTextChangeListener(editText, i))
                 editTexts.put(i, editText)
-                editText.onFocusChangeListener = OnFocusChangeListener { v, hasFocus -> if (hintTextView != null) hintTextView!!.setHintTextColor(if (hasFocus) hintColorFocus else hintColorDefault) }
+                editText.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
+                    if (hintTextView != null)
+                        hintTextView!!.setHintTextColor(
+                                if (hasFocus) hintColorFocus else hintColorDefault
+                        ) }
                 editText.setSupportTextAppearance(textAppearance)
                 setTextSize(editText, textSize)
                 editText.setOnKeyListener(createKeyListener(editText, i))
@@ -223,14 +226,14 @@ class BlockEditText : FrameLayout {
                 if (separatorTextSize > 0) textView.textSize = separatorTextSize
                 blockLinearLayout!!.addView(textView)
             }
-            editText.setText(null)
+            editText.text = null
             setEditTextEnable(editText, i)
             i++
         }
         while (i < editTexts.size()) {
             editTexts.remove(i)
         }
-        text = text
+        this.text = text
         hideOrShowCardIcon()
     }
 
@@ -309,7 +312,7 @@ class BlockEditText : FrameLayout {
             var i = 0
             while (i < editTexts.size()) {
                 val editText = editTexts[i]
-                editText.setText(null)
+                editText?.text= null
                 i++
             }
             if (sequence != null) {
@@ -525,9 +528,9 @@ class BlockEditText : FrameLayout {
 
     private fun updateCardIcon() {
         if (cardPrefixes.size > 0) {
-            val text: String = text
+            val text: String = text.toString()
             for (cardPrefix in cardPrefixes) {
-                for (prefix in cardPrefix.prefixes) if (text.startsWith(prefix!!)) {
+                for (prefix in cardPrefix.prefixes) if (text.startsWith(prefix)) {
                     iconImageView!!.setImageDrawable(cardPrefix.icon)
                     if (cardPrefix.lengths.size() > 0) {
                         lengthUsed = cardPrefix.lengths
@@ -580,7 +583,7 @@ class BlockEditText : FrameLayout {
     private fun createTextChangeListener(editText: AEditText, index: Int): TextWatcher {
         return object : TextWatcher {
             var sequence: CharSequence = ""
-            var beforSequence: CharSequence = ""
+            var beforeSequence: CharSequence = ""
             var prevLength = 0
             var selection = 0
             var start = 0
@@ -589,19 +592,21 @@ class BlockEditText : FrameLayout {
                 var start = start
                 prevLength = s.length
                 selection = editText.selectionStart
-                beforSequence = sequence
+                beforeSequence = sequence
                 for (i in 0 until index) {
                     start += getLength(i)
                 }
                 this.start = start
-                before = beforSequence.length
-                this@BlockEditText.beforeTextChanged(beforSequence, this.start, before, before + (after - count))
+                before = beforeSequence.length
+                this@BlockEditText.beforeTextChanged(beforeSequence, this.start, before, before + (after - count))
             }
 
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 val nextView: EditText? = editTexts[index + 1]
                 val prevView: EditText? = editTexts[index - 1]
-                if (s.length > prevLength && editText.isFocused && editText.selectionStart == getLength(index)) if (s.length == getLength(index) && nextView != null && nextView.text.length == 0) nextView.requestFocus() else if (s.length == 0 && prevView != null) prevView.requestFocus()
+                if (s.length > prevLength && editText.isFocused && editText.selectionStart == getLength(index))
+                    if (s.length == getLength(index) && nextView != null && nextView.text.isEmpty()) nextView.requestFocus()
+                    else if (s.isEmpty() && prevView != null) prevView.requestFocus()
                 if (shiftPosition && s.length < getLength(index)) {
                     if (editText.selectionStart == 0 && editText.isFocused && prevView != null) {
                         prevView.requestFocus()
@@ -633,7 +638,7 @@ class BlockEditText : FrameLayout {
 
     inner class LengthFilter(private val editText: AEditText, private val index: Int) : InputFilter {
         override fun filter(source: CharSequence, start: Int, end: Int, dest: Spanned,
-                            dstart: Int, dend: Int): CharSequence {
+                            dstart: Int, dend: Int): CharSequence? {
             var source = source
             source = if (editText.inputType == InputType.TYPE_CLASS_NUMBER) {
                 source.toString().replace("[\\D]".toRegex(), "")
@@ -643,7 +648,7 @@ class BlockEditText : FrameLayout {
             val mMax = getLength(index)
             var keep = mMax - (dest.length - (dend - dstart))
             val nextView: EditText? = editTexts[index + 1]
-            if (source.length == 0) return null
+            if (source.isEmpty()) return null
             return if (keep <= 0) {
                 if (nextView != null && text!!.length < maxLength) {
                     val s = source.toString()
@@ -656,7 +661,7 @@ class BlockEditText : FrameLayout {
                         nextView.requestFocus()
                         nextView.setSelection(0)
                     }
-                    if (temp.length > 0) {
+                    if (temp.isNotEmpty()) {
                         nextView.editableText.insert(0, temp)
                         val nextLength = getLength(index + 1)
                         nextView.setSelection(if (temp.length < nextLength) temp.length else nextLength)
@@ -677,7 +682,7 @@ class BlockEditText : FrameLayout {
                         nextView.requestFocus()
                         nextView.setSelection(0)
                     }
-                    if (temp.length > 0) {
+                    if (temp.isNotEmpty()) {
                         nextView.editableText.insert(0, temp)
                         val nextLength = getLength(index + 1)
                         nextView.setSelection(if (temp.length < nextLength) temp.length else nextLength)
