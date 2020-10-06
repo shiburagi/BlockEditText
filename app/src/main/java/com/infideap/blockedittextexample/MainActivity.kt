@@ -7,13 +7,16 @@ import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import com.infideap.blockedittext.BlockEditText
 import com.infideap.blockedittext.CardPrefix
+import com.infideap.blockedittextexample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val binding: ActivityMainBinding = DataBindingUtil.setContentView(
+                this, R.layout.activity_main)
         val amexEditText: BlockEditText = findViewById(R.id.blockEditText_amex)
         amexEditText.setNumberOfBlock(3)
         amexEditText.setDefaultLength(4)
@@ -36,10 +39,14 @@ class MainActivity : AppCompatActivity() {
         val cardEditText: BlockEditText = findViewById(R.id.blockEditText_card)
         cardEditText.addCardPrefix(CardPrefix.amex(this))
         val icNumberEditText: BlockEditText = findViewById(R.id.blockEditText_ic_number)
-        icNumberEditText.setNumberOfBlock(3)
+        // Data Binding
+        binding.idNumber = "980201-01-1234"
+        binding.numberOfBlockId = 3
+
         icNumberEditText.setDefaultLength(6)
         icNumberEditText.setLengthAt(1, 2)
         icNumberEditText.setLengthAt(2, 4)
-        icNumberEditText.setSelection(0)
+
+
     }
 }
