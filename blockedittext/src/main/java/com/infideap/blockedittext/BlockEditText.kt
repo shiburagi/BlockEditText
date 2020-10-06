@@ -136,7 +136,7 @@ class BlockEditText : FrameLayout {
                 inputType
         )
         shiftPosition = a.getBoolean(
-                R.styleable.BlockEditText_bet_showCardIcon,
+                R.styleable.BlockEditText_showCardIcon,
                 true
         )
         isShowCardIcon = a.getBoolean(
@@ -144,7 +144,7 @@ class BlockEditText : FrameLayout {
                 true
         )
         editTextStyle = a.getResourceId(
-                R.styleable.BlockEditText_bet_style, -1
+                R.styleable.BlockEditText_style, -1
         )
         val cardPrefix = a.getInt(
                 R.styleable.BlockEditText_cardPrefix,
@@ -161,7 +161,7 @@ class BlockEditText : FrameLayout {
         }
         setHintTextAppearance(hintTextAppearance)
         shiftPosition = a.getBoolean(
-                R.styleable.BlockEditText_bet_shiftPosition,
+                R.styleable.BlockEditText_shiftPosition,
                 true
         )
         initLayout()
@@ -383,8 +383,8 @@ class BlockEditText : FrameLayout {
         }
     }
 
-    private fun setEdiTextBackground(editText: AEditText?, drawable: Drawable) {
-        ViewCompat.setBackground(editText!!, drawable.constantState!!.newDrawable())
+    private fun setEdiTextBackground(editText: AEditText?, drawable: Drawable?) {
+        ViewCompat.setBackground(editText!!, drawable?.constantState?.newDrawable())
     }
 
     fun setLengthAt(index: Int, length: Int) {

@@ -18,17 +18,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="16dp" />
 
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="16dp" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="16dp" />
-
-            <Space
-                android:layout_width="wrap_content"
-                android:layout_height="16dp" />
 
             <View
                 android:layout_width="match_parent"
@@ -89,19 +78,30 @@
                 app:inputType="Integer"
                 app:numberOfBlock="@{numberOfBlock_id, default=4}"
                 app:text="@{id_number}" />
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="16dp" />
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
+                android:background="#aaa" />
 
             <com.infideap.blockedittext.BlockEditText
                 android:id="@+id/blockEditText_unshift_position"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:bet_cardIconSize="48dp"
-                app:bet_cardPrefix="Mastercard|Visa"
-                app:bet_defaultLength="4"
-                app:bet_editTextBackground="@drawable/selector_edittext_round_border"
-                app:bet_hint="Unshift Block"
-                app:bet_inputType="Integer"
-                app:bet_numberOfBlock="4"
-                app:bet_shiftPosition="false" />
+                app:cardIconSize="48dp"
+                app:cardPrefix="Mastercard|Visa"
+                app:defaultLength="4"
+                app:editTextBackground="@drawable/selector_edittext_round_border"
+                app:hint="Unshift Block"
+                app:inputType="Integer"
+                app:numberOfBlock="4"
+                app:shiftPosition="false" />
         </LinearLayout>
 
 
