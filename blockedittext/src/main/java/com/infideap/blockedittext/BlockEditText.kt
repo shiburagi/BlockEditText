@@ -84,66 +84,70 @@ class BlockEditText : FrameLayout {
         linearLayout!!.addView(blockLinearLayout)
         addView(linearLayout)
         val a = context.obtainStyledAttributes(attrs, R.styleable.BlockEditText)
-        editTextBackground = a.getDrawable(R.styleable.BlockEditText_bet_editTextBackground)
-        hint = a.getString(R.styleable.BlockEditText_bet_hint)
+        editTextBackground = a.getDrawable(R.styleable.BlockEditText_editTextBackground)
+        hint = a.getString(R.styleable.BlockEditText_hint)
         setHint(hint)
-        var tempStr = a.getString(R.styleable.BlockEditText_bet_separatorCharacter)
+        var tempStr = a.getString(R.styleable.BlockEditText_separatorCharacter)
         if (!TextUtils.isEmpty(tempStr)) {
             separator = tempStr!![0]
         }
         noOfBlock = a.getInt(
-                R.styleable.BlockEditText_bet_numberOfBlock,
+                R.styleable.BlockEditText_numberOfBlock,
                 noOfBlock
         )
         defaultLength = a.getInt(
-                R.styleable.BlockEditText_bet_defaultLength,
+                R.styleable.BlockEditText_defaultLength,
                 defaultLength
         )
         textAppearance = a.getResourceId(
-                R.styleable.BlockEditText_bet_hintTextAppearance,
+                R.styleable.BlockEditText_hintTextAppearance,
                 textAppearance
         )
         hintTextAppearance = a.getResourceId(
-                R.styleable.BlockEditText_bet_hintTextAppearance,
+                R.styleable.BlockEditText_hintTextAppearance,
                 hintTextAppearance
         )
         separatorTextAppearance = a.getResourceId(
-                R.styleable.BlockEditText_bet_separatorTextAppearance,
+                R.styleable.BlockEditText_separatorTextAppearance,
                 separatorTextAppearance
         )
         textSize = a.getDimension(
-                R.styleable.BlockEditText_bet_textSize,
+                R.styleable.BlockEditText_textSize,
                 textSize
         )
         hintTextSize = a.getDimension(
-                R.styleable.BlockEditText_bet_hintTextSize,
+                R.styleable.BlockEditText_hintTextSize,
                 hintTextSize
         )
         separatorTextSize = a.getDimension(
-                R.styleable.BlockEditText_bet_separatorTextSize,
+                R.styleable.BlockEditText_separatorTextSize,
                 separatorTextSize
         )
         cardIconSize = a.getDimensionPixelOffset(
-                R.styleable.BlockEditText_bet_cardIconSize,
+                R.styleable.BlockEditText_cardIconSize,
                 cardIconSize
         )
         separatorPadding = a.getDimensionPixelOffset(
-                R.styleable.BlockEditText_bet_hintTextSize,
+                R.styleable.BlockEditText_hintTextSize,
                 separatorPadding
         )
         inputType = a.getInt(
-                R.styleable.BlockEditText_bet_inputType,
+                R.styleable.BlockEditText_inputType,
                 inputType
         )
         shiftPosition = a.getBoolean(
                 R.styleable.BlockEditText_bet_showCardIcon,
                 true
         )
+        isShowCardIcon = a.getBoolean(
+                R.styleable.BlockEditText_showCardIcon,
+                true
+        )
         editTextStyle = a.getResourceId(
                 R.styleable.BlockEditText_bet_style, -1
         )
         val cardPrefix = a.getInt(
-                R.styleable.BlockEditText_bet_cardPrefix,
+                R.styleable.BlockEditText_cardPrefix,
                 0
         )
         if (containsFlag(cardPrefix, AMEX)) {
@@ -161,7 +165,7 @@ class BlockEditText : FrameLayout {
                 true
         )
         initLayout()
-        tempStr = a.getString(R.styleable.BlockEditText_bet_text)
+        tempStr = a.getString(R.styleable.BlockEditText_text)
         if (tempStr != null) text = tempStr
         a.recycle()
     }

@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="BlockEditText">
+        <attr name="numberOfBlock" format="integer" />
+        <attr name="defaultLength" format="integer" />
+        <attr name="separatorPadding" format="dimension" />
+        <attr name="textSize" format="dimension" />
+        <attr name="hintTextSize" format="dimension" />
+        <attr name="separatorTextSize" format="dimension" />
+        <attr name="cardIconSize" format="dimension" />
+        <attr name="hint" format="string" />
+        <attr name="text" format="string" />
+        <attr name="separatorCharacter" format="string" />
+        <attr name="textAppearance" format="reference" />
+        <attr name="hintTextAppearance" format="reference" />
+        <attr name="separatorTextAppearance" format="reference" />
+        <attr name="editTextBackground" format="reference" />
+        <attr name="showCardIcon" format="boolean" />
         <attr name="bet_numberOfBlock" format="integer" />
         <attr name="bet_defaultLength" format="integer" />
         <attr name="bet_separatorPadding" format="dimension" />
@@ -19,11 +34,11 @@
         <attr name="bet_shiftPosition" format="boolean" />
         <attr name="bet_style" format="reference" />
 
-        <attr name="bet_inputType" format="enum">
+        <attr name="inputType" format="enum">
             <enum name="Text" value="1" />
             <enum name="Integer" value="2"/>
         </attr>
-        <attr name="bet_cardPrefix">
+        <attr name="cardPrefix">
             <flag name="Amex" value="1"/>
             <flag name="Mastercard" value="2"/>
             <flag name="Visa" value="3" />
