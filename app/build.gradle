@@ -30,7 +30,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-    implementation project(':blockedittext')
+    debugImplementation project(':blockedittext')
+    releaseImplementation 'com.infideap.blockedittext:block-edittext:0.3.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.app.infideap.stylishwidget:stylish-widget:1.4.2-alpha', {
         exclude group: 'com.android.support', module: 'support-annotations'

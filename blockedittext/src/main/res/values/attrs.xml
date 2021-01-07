@@ -11,6 +11,7 @@
         <attr name="hint" format="string" />
         <attr name="text" format="string" />
         <attr name="separatorCharacter" format="string" />
+        <attr name="typefaceFromAsset" format="string" />
         <attr name="textAppearance" format="reference" />
         <attr name="hintTextAppearance" format="reference" />
         <attr name="separatorTextAppearance" format="reference" />
@@ -18,6 +19,8 @@
         <attr name="showCardIcon" format="boolean" />
         <attr name="shiftPosition" format="boolean" />
         <attr name="style" format="reference" />
+        <attr name="hintTextColor" format="color" />
+        <attr name="inputTextColor" format="color" />
 
         <attr name="inputType" format="enum">
             <enum name="Text" value="1" />
