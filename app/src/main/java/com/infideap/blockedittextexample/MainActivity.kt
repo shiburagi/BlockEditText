@@ -1,6 +1,8 @@
 package com.infideap.blockedittextexample
 
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
@@ -46,6 +48,19 @@ class MainActivity : AppCompatActivity() {
         icNumberEditText.setDefaultLength(6)
         icNumberEditText.setLengthAt(1, 2)
         icNumberEditText.setLengthAt(2, 4)
+
+
+        val customFontEditText: BlockEditText = findViewById(R.id.blockEditText_custom_font)
+//        customFontEditText.setTypeface(Typeface.createFromAsset(resources.assets, "Quicksand-Light.ttf"))
+
+        val customTextColorEditText: BlockEditText = findViewById(R.id.blockEditText_custom_text_color)
+//        customTextColorEditText.setHintTextColor(Color.BLACK)
+        customTextColorEditText.setInputTextColor(ColorStateList(
+                arrayOf(
+                        intArrayOf(android.R.attr.state_focused),
+                        intArrayOf()),
+                intArrayOf(ContextCompat.getColor(this,R.color.colorPrimary), Color.BLACK),
+        ))
 
 
     }

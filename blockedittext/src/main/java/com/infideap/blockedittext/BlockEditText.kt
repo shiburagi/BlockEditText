@@ -2,10 +2,12 @@ package com.infideap.blockedittext
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.*
 import android.util.AttributeSet
+import android.util.Log
 import android.util.SparseArray
 import android.util.SparseIntArray
 import android.view.*
@@ -17,6 +19,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.util.keyIterator
 import androidx.core.view.ViewCompat
 import com.app.infideap.stylishwidget.util.Utils
 import com.app.infideap.stylishwidget.view.AEditText
@@ -32,6 +35,8 @@ class BlockEditText : FrameLayout {
     private var defaultLength = 1
     private var hintTextView: ATextView? = null
     private var inputType = InputType.TYPE_CLASS_TEXT
+    private var inputTextColor: ColorStateList? = null
+    private var typeface: Typeface? = null
     private var watcher: TextWatcher? = null
     private var callback: ActionMode.Callback? = null
     private val editTexts = SparseArray<AEditText?>()
@@ -87,6 +92,8 @@ class BlockEditText : FrameLayout {
         editTextBackground = a.getDrawable(R.styleable.BlockEditText_editTextBackground)
         hint = a.getString(R.styleable.BlockEditText_hint)
         setHint(hint)
+
+
         var tempStr = a.getString(R.styleable.BlockEditText_separatorCharacter)
         if (!TextUtils.isEmpty(tempStr)) {
             separator = tempStr!![0]
@@ -167,6 +174,23 @@ class BlockEditText : FrameLayout {
         initLayout()
         tempStr = a.getString(R.styleable.BlockEditText_text)
         if (tempStr != null) text = tempStr
+
+
+        val filename = a.getString(R.styleable.BlockEditText_typefaceFromAsset);
+        Log.e("Filename", filename ?: "")
+        if (filename != null)
+            setTypefaceFromAsset(filename)
+
+        val color = a.getColorStateList(
+                R.styleable.BlockEditText_inputTextColor
+        )
+        if (color != null)
+            setInputTextColor(color)
+        val hintTextColor = a.getColorStateList(
+                R.styleable.BlockEditText_hintTextColor
+        )
+        if (hintTextColor != null)
+            setHintTextColor(hintTextColor.defaultColor)
         a.recycle()
     }
 
@@ -196,10 +220,15 @@ class BlockEditText : FrameLayout {
                 editText.addTextChangedListener(createTextChangeListener(editText, i))
                 editTexts.put(i, editText)
                 editText.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
-                    if (hintTextView != null)
-                        hintTextView!!.setHintTextColor(
-                                if (hasFocus) hintColorFocus else hintColorDefault
-                        ) }
+                    if (hintTextView != null) {
+                        val hintColorFocus: ColorStateList = ColorStateList.valueOf(
+                                editText.textColors.getColorForState(
+                                        intArrayOf(android.R.attr.state_focused),
+                                        ContextCompat.getColor(context, R.color.colorAccent)
+                                ))
+                        updateHintTextColor(hasFocus);
+                    }
+                }
                 editText.setSupportTextAppearance(textAppearance)
                 setTextSize(editText, textSize)
                 editText.setOnKeyListener(createKeyListener(editText, i))
@@ -207,6 +236,9 @@ class BlockEditText : FrameLayout {
                 editText = editTexts[i]
             }
             editText!!.inputType = inputType
+            editText.typeface = typeface
+            if (inputTextColor != null)
+                editText.setTextColor(inputTextColor);
             val filters = arrayOfNulls<InputFilter>(1)
             filters[0] = LengthFilter(editText, i)
             editText.filters = filters
@@ -220,6 +252,7 @@ class BlockEditText : FrameLayout {
             if (i + 1 < noOfBlock && separator != null) {
                 val textView = ATextView(context)
                 textView.text = separator.toString()
+                textView.typeface = typeface
                 val textViewParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
                 )
@@ -239,6 +272,12 @@ class BlockEditText : FrameLayout {
         }
         this.text = text
         hideOrShowCardIcon()
+    }
+
+    private fun updateHintTextColor(hasFocus: Boolean) {
+        hintTextView!!.setHintTextColor(
+                if (hasFocus) hintColorFocus else hintColorDefault
+        )
     }
 
     private fun setEditTextEnable(editText: AEditText?, i: Int) {
@@ -316,7 +355,7 @@ class BlockEditText : FrameLayout {
             var i = 0
             while (i < editTexts.size()) {
                 val editText = editTexts[i]
-                editText?.text= null
+                editText?.text = null
                 i++
             }
             if (sequence != null) {
@@ -366,6 +405,47 @@ class BlockEditText : FrameLayout {
         }
     }
 
+
+    fun setInputTextColor(color: ColorStateList) {
+        inputTextColor = color
+
+        hintColorFocus = ColorStateList.valueOf(color.getColorForState(
+                intArrayOf(android.R.attr.state_focused),
+                ContextCompat.getColor(context, R.color.colorAccent)))
+        for (i in 0 until editTexts.size()) {
+            val editText = editTexts[i]
+            editText!!.setTextColor(inputTextColor);
+
+        }
+    }
+
+
+    fun setInputTextColor(color: Int) {
+
+
+        for (i in 0 until editTexts.size()) {
+            val editText = editTexts[i]
+            editText!!.setTextColor(color);
+            inputTextColor = editText.textColors
+        }
+    }
+
+    fun setTypefaceFromAsset(filename: String) {
+        setTypeface(Typeface.createFromAsset(context.resources.assets, filename));
+    }
+
+    fun setTypeface(typeface: Typeface) {
+        Log.e("Typeface", typeface.toString())
+        this.typeface = typeface
+        if (hintTextView != null)
+            hintTextView!!.typeface = typeface
+
+        for (i in 0 until editTexts.size()) {
+            val editText = editTexts[i]
+            editText!!.typeface = typeface
+        }
+    }
+
     fun setNumberOfBlock(block: Int) {
         noOfBlock = block
         initLayout()
@@ -395,15 +475,18 @@ class BlockEditText : FrameLayout {
     fun setHint(hint: String?) {
         if (hintTextView == null) {
             hintTextView = ATextView(context)
+            hintTextView!!.typeface = typeface
             hintTextView!!.setPadding(16, 0, 16, 0)
             setHintTextAppearance(hintTextAppearance)
             setHintTextSize(hintTextAppearance.toFloat())
             linearLayout!!.addView(hintTextView, 0)
             hintColorDefault = hintTextView!!.hintTextColors
-            hintColorFocus = ContextCompat.getColorStateList(
-                    context,
-                    R.color.colorAccent
-            )
+//            hintColorFocus = ContextCompat.getColorStateList(
+//                    context,
+//                    R.color.colorAccent
+//            )
+
+
         }
         hintTextView!!.visibility = if (hint == null) GONE else VISIBLE
         hintTextView!!.hint = hint
@@ -422,6 +505,25 @@ class BlockEditText : FrameLayout {
             hintTextView!!.setSupportTextAppearance(textAppearance)
         }
     }
+
+    fun setHintTextColor(color: Int) {
+        hintColorDefault = ColorStateList.valueOf(color)
+        if (hintTextView != null) {
+            var focus = false;
+            for (i in 0 until editTexts.size()) {
+                val editText = editTexts[i]
+                if (editText?.isFocused == true) {
+                    focus = true
+                    break;
+                }
+            }
+            updateHintTextColor(focus)
+        }
+    }
+
+//    fun setFocusHintTextColor(color: Int) {
+//        hintColorFocus = ColorStateList.valueOf(color)
+//    }
 
     fun setSeparatorTextAppearance(textAppearance: Int) {
         separatorTextAppearance = textAppearance

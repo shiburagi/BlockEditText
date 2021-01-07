@@ -102,6 +102,41 @@
                 app:inputType="Integer"
                 app:numberOfBlock="4"
                 app:shiftPosition="false" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
+                android:background="#aaa" />
+
+            <com.infideap.blockedittext.BlockEditText
+                android:id="@+id/blockEditText_custom_font"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardIconSize="48dp"
+                app:cardPrefix="Mastercard|Visa"
+                app:defaultLength="4"
+                app:separatorCharacter="/"
+                app:typefaceFromAsset="Quicksand-Medium.ttf"
+                app:editTextBackground="@drawable/selector_edittext_round_border"
+                app:hint="Custom Font"
+                app:inputType="Integer"
+                app:numberOfBlock="4"
+                app:shiftPosition="false" />
+            <com.infideap.blockedittext.BlockEditText
+                android:id="@+id/blockEditText_custom_text_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardIconSize="48dp"
+                app:cardPrefix="Mastercard|Visa"
+                app:defaultLength="4"
+                app:hintTextColor="@color/colorPrimary"
+                app:editTextBackground="@drawable/selector_edittext_round_border"
+                app:hint="Custom Text Color"
+                app:inputType="Integer"
+                app:numberOfBlock="4"
+                app:shiftPosition="false" />
         </LinearLayout>
 
 
