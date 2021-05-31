@@ -17,28 +17,17 @@ Android 14.0+ support
 If you are a Maven user you can easily include the library by specifying it as
 a dependency:
 
-#### Maven
-``` xml
-<dependency>
-  <groupId>com.infideap.blockedittext</groupId>
-  <artifactId>block-edittext</artifactId>
-  <version>0.3.1</version>
-  <type>pom</type>
-</dependency>
-```
 #### Gradle
-```groovy
-dependencies {
-   implementation 'com.infideap.blockedittext:block-edittext:0.3.1'
-}
-```
-
-if **the gradle unable to sync**, you may include this line in project level gradle,
 ```groovy
 repositories {
  maven{
-   url "https://dl.bintray.com/infideap2/Block-EditText"
+   maven { url 'https://jitpack.io' }
  }
+}
+```
+```groovy
+dependencies {
+	 implementation 'com.github.shiburagi:BlockEditText:v0.2'
 }
 ```
 
